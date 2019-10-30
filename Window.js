@@ -27,47 +27,101 @@ function Window(params) {
 
   // background layer that close window on click
   if (params.useBackgroundLayer) {
-    this.bgLayer = new DE.GameObject({
-      alpha: 0.7,
-      cursor: 'pointer',
-      interactive: true,
-      hitarea: new DE.PIXI.Rectangle(0, 0, params.width * 2, params.height * 2),
-      renderer: new DE.RectRenderer(
-        params.width * 2,
-        params.height * 2,
-        '0x010101',
-        {
-          fill: true,
-          x: -params.width,
-          y: -params.height,
-        },
-      ),
-      pointerup: (e) => {
-        if (params.closeOnLayerClick !== false) {
-          this.hide();
-        }
-        // prevent click propagating in the scene behind
-        e.stopPropagation();
+    params.layer = Object.assign(
+      {
+        width: params.width * 2,
+        height: params.height * 2,
+        alpha: 0.7,
+        color: '0x010101',
       },
-      zindex: 0,
-    });
+      params.layer,
+    );
+    this.bgLayer = new DE.GameObject(
+      Object.assign(
+        {
+          zindex: 0,
+          cursor: 'pointer',
+          interactive: true,
+          hitarea: new DE.PIXI.Rectangle(
+            0,
+            0,
+            params.layer.width,
+            params.layer.height,
+          ),
+          renderer: new DE.RectRenderer(
+            params.layer.width,
+            params.layer.height,
+            params.layer.color,
+            {
+              fill: true,
+              x: -params.layer.width / 2,
+              y: -params.layer.height / 2,
+            },
+          ),
+          pointerup: (e) => {
+            if (params.closeOnLayerClick !== false) {
+              this.hide();
+            }
+            // prevent click propagating in the scene behind
+            e.stopPropagation();
+          },
+        },
+        params.layer,
+      ),
+    );
     this.add(this.bgLayer);
   }
 
   // background frame
-  this.add(
-    new DE.GameObject({
-      opacity: 0.9,
-      interactive: true,
-      hitarea: new DE.PIXI.Rectangle(0, 0, params.width * 2, params.height * 2),
-      renderers: [
-        new DE.RectRenderer(params.width, params.height, '0x434343', {
-          lineStyle: [4, '0xF033F0', 1],
+  if (!params.frame) {
+    params.frame = {
+      method: 'color',
+      color: '0x434343',
+      lineStyle: [4, '0xF033F0', 1],
+    };
+  }
+  var frameRenderer;
+  let method = params.frame.method;
+  delete params.frame.method;
+  switch (method) {
+    case '9slice':
+      frameRenderer = new DE.NineSliceRenderer(
+        {
+          textureName: params.frame.spriteName || params.frame.textureName,
+          x: -params.width / 2,
+          y: -params.height / 2,
+          width: params.width,
+          height: params.height,
+        },
+        params.frame.left,
+        params.frame.top,
+        params.frame.right,
+        params.frame.bottom,
+      );
+      break;
+
+    case 'sprite':
+      frameRenderer = new DE.SpriteRenderer(params.frame);
+      break;
+
+    default:
+      frameRenderer = new DE.RectRenderer(
+        params.width,
+        params.height,
+        params.frame.color,
+        {
+          lineStyle: params.frame.lineStyle,
           fill: true,
           x: -params.width / 2,
           y: -params.height / 2,
-        }),
-      ],
+        },
+      );
+  }
+  this.add(
+    new DE.GameObject({
+      interactive: true,
+      hitarea: new DE.PIXI.Rectangle(0, 0, params.width, params.height),
+      renderer: frameRenderer,
       pointerup: (e) => {
         // prevent click propagating behind the frame
         e.stopPropagation();
@@ -75,13 +129,16 @@ function Window(params) {
     }),
   );
 
+  params.header = Object.assign({}, params.header);
   this.header = new DE.GameObject({
-    x: -params.width / 2,
-    y: -params.height / 2 + 40,
+    x: -params.width / 2 + (params.header.x || 0),
+    y: -params.height / 2 + (params.header.y || 0),
     zindex: 2,
   });
+
+  params.content = Object.assign({}, params.content);
   this.content = new DE.GameObject({
-    x: -params.width / 2,
+    x: -params.width / 2 + (params.content.x || 0),
     y: -params.height / 2 + (params.content.y || 0),
     zindex: 1,
   });
@@ -106,7 +163,7 @@ function Window(params) {
         { spriteName: 'close-button' },
         params.button,
       ),
-      collider: Object.assign({ width: 100, height: 100 }, params.button),
+      collider: Object.assign({ width: 50, height: 50 }, params.button),
       direction: params.button.direction || 'horizontal',
     },
     {

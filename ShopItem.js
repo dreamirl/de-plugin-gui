@@ -91,20 +91,24 @@ function ShopItem(objectParams, customParams) {
           DE.Platform.shop
             .purchase(productID)
             .then((d) => {
-              DE.Platform.pushAnalytic('shop-item-store-purchase-complete', { productID });
+              DE.Platform.pushAnalytic('shop-item-store-purchase-complete', {
+                productID,
+              });
               DE.trigger('shop-item-store-purchase-complete', productID);
               self.onBuy(productID);
             })
             .catch((e) => {
               DE.Platform.pushAnalytic('shop-item-store-purchase-fail', {
                 productID,
-                error: e
+                error: e,
               });
               DE.trigger('shop-item-store-purchase-fail', e, productID);
               console.error('purchase failed', e);
             });
         } else {
-          DE.Platform.pushAnalytic('shop-item-currency-purchase', { productID });
+          DE.Platform.pushAnalytic('shop-item-currency-purchase', {
+            productID,
+          });
           DE.trigger('shop-item-currency-purchase', productID);
           self.onBuy(productID);
         }
