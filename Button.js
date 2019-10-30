@@ -1,157 +1,150 @@
 /**
  *
  * @example var button = new DE.Button( {
-  *   'x': 250, 'y': 250, 'zindex': 10
-  * }, {
-  *   spriteRenderer: { 'spriteName': 'btn', 'startFrame': 0, 'startLine': 0 }
-  *   ,textRenderer: {
-  *      'color': 'white', 'fontSize': 28
-  *     ,'textWidth': 500, 'textHeight': 70, 'text': "ClickMe"
-  *    }
-  *   ,text: "hello" // can be a key for Localization
-  *   , collider: { 'width': 530, 'height': 100 }
-  *   ,'direction': 'horizontal'
-  * }, {
-  *   onMouseClick: function()
-  *   {
-  *     console.log( "You clicked me wow" );
-  *   }
-  * } );
-  */
+ *   'x': 250, 'y': 250, 'zindex': 10
+ * }, {
+ *   spriteRenderer: { 'spriteName': 'btn', 'startFrame': 0, 'startLine': 0 }
+ *   ,textRenderer: {
+ *      'color': 'white', 'fontSize': 28
+ *     ,'textWidth': 500, 'textHeight': 70, 'text': "ClickMe"
+ *    }
+ *   ,text: "hello" // can be a key for Localization
+ *   , collider: { 'width': 530, 'height': 100 }
+ *   ,'direction': 'horizontal'
+ * }, {
+ *   onMouseClick: function()
+ *   {
+ *     console.log( "You clicked me wow" );
+ *   }
+ * } );
+ */
 import DE from '@dreamirl/dreamengine';
 
-function Button( objectParams, buttonParams, events )
-{
+function Button(objectParams, buttonParams, events) {
   let hitarea = null;
-  if ( !buttonParams.collider ) {
+  if (!buttonParams.collider) {
     hitarea = null; // image will be used as it is
+  } else if (buttonParams.collider.radius) {
+    hitarea = new DE.PIXI.Circle(
+      buttonParams.collider.x || 0,
+      buttonParams.collider.y || 0,
+      buttonParams.collider.radius,
+    );
+  } else if (buttonParams.collider.width) {
+    hitarea = new DE.PIXI.Rectangle(
+      buttonParams.collider.x || 0,
+      buttonParams.collider.y || 0,
+      buttonParams.collider.width,
+      buttonParams.collider.height || buttonParams.collider.width,
+    );
   }
-  else if ( buttonParams.collider.radius ) {
-    hitarea = new DE.PIXI.Circle( buttonParams.collider.x || 0, buttonParams.collider.y || 0, buttonParams.collider.radius );
-  }
-  else if ( buttonParams.collider.width ) {
-    hitarea = new DE.PIXI.Rectangle( buttonParams.collider.x || 0, buttonParams.collider.y || 0
-      , buttonParams.collider.width, buttonParams.collider.height || buttonParams.collider.width );
-  }
-  
-  let spriteRd = new DE.SpriteRenderer( buttonParams.spriteRenderer )
+
+  let spriteRd = new DE.SpriteRenderer(buttonParams.spriteRenderer);
   let textRd;
   let renderers = [spriteRd];
   if (buttonParams.textRenderer || buttonParams.text) {
     textRd = new DE.TextRenderer(buttonParams.text, buttonParams.textRenderer);
     renderers.push(textRd);
   }
-  
-  DE.GameObject.call( this, Object.assign( objectParams, {
-    renderers,
-    cursor: "pointer",
-    interactive: true,
-    hitarea,
-    pointertap: this.onMouseClick,
-    pointerover: this.onMouseEnter,
-    pointerout: this.onMouseLeave,
-    pointerdown: this.onMouseDown,
-    pointerup: this.onMouseUp,
-    pointerupoutside: this.onMouseUpOutside,
-  }));
 
-  this.direction = buttonParams.direction || "horizontal";
+  DE.GameObject.call(
+    this,
+    Object.assign(objectParams, {
+      renderers,
+      cursor: 'pointer',
+      interactive: true,
+      hitarea,
+      pointertap: this.onMouseClick,
+      pointerover: this.onMouseEnter,
+      pointerout: this.onMouseLeave,
+      pointerdown: this.onMouseDown,
+      pointerup: this.onMouseUp,
+      pointerupoutside: this.onMouseUpOutside,
+    }),
+  );
+
+  this.direction = buttonParams.direction || 'horizontal';
 
   this.spriteRenderer = spriteRd;
   this.textRenderer = textRd;
-  
-  this.customonMouseClick = function(){};
-  this.customonMouseEnter = function(){};
-  this.customonMouseLeave = function(){};
-  this.customonMouseDown  = function(){};
-  this.customonMouseUp = function(){};
-  this.customonMouseUpOutside = function(){};
-  for ( var i in events )
-    this[ "custom" + i ] = events[ i ];
-  this.stateOnClick = buttonParams.stateOnClick || "hover";
-  this.stateOnUp = buttonParams.stateOnUp || "hover";
-  
+
+  this.customonMouseClick = function() {};
+  this.customonMouseEnter = function() {};
+  this.customonMouseLeave = function() {};
+  this.customonMouseDown = function() {};
+  this.customonMouseUp = function() {};
+  this.customonMouseUpOutside = function() {};
+  for (var i in events) this['custom' + i] = events[i];
+  this.stateOnClick = buttonParams.stateOnClick || 'hover';
+  this.stateOnUp = buttonParams.stateOnUp || 'hover';
+
   this.sound = buttonParams.sound;
 }
 
 Button.prototype = new DE.GameObject();
 Button.prototype.constructor = Button;
-Button.prototype.supr        = DE.GameObject.prototype;
+Button.prototype.supr = DE.GameObject.prototype;
 
 Button.prototype.defaultSound = undefined; // define this for a default sounds applied on all buttons
-Button.prototype.onMouseClick = function( event )
-{
-  if ( this.sound || Button.prototype.defaultSound )
-    DE.Audio.fx.play( this.sound || Button.prototype.defaultSound );
-  this.changeState( event, this.stateOnClick );
-  this.customonMouseClick( event );
+Button.prototype.onMouseClick = function(event) {
+  if (this.sound || Button.prototype.defaultSound)
+    DE.Audio.fx.play(this.sound || Button.prototype.defaultSound);
+  this.changeState(event, this.stateOnClick);
+  this.customonMouseClick(event);
   event.stopPropagation();
   return true;
 };
 // let user choose if he want to use it
-Button.prototype.onMouseUp = function( event )
-{
-  this.changeState( event, this.stateOnUp );
-  this.customonMouseUp( event );
+Button.prototype.onMouseUp = function(event) {
+  this.changeState(event, this.stateOnUp);
+  this.customonMouseUp(event);
   return true;
 };
 
-Button.prototype.onMouseUpOutside = function( event )
-{
-  this.changeState( event, this.stateOnUp );
-  this.customonMouseUpOutside( event );
+Button.prototype.onMouseUpOutside = function(event) {
+  this.changeState(event, this.stateOnUp);
+  this.customonMouseUpOutside(event);
   return true;
 };
 
-Button.prototype.onMouseDown = function( event )
-{
-  this.changeState( event, "active" );
-  var e = this.customonMouseDown( event );
-  if ( e )
-    return e;
+Button.prototype.onMouseDown = function(event) {
+  this.changeState(event, 'active');
+  var e = this.customonMouseDown(event);
+  if (e) return e;
   // killing events
   return true;
 };
 
-Button.prototype.onMouseEnter = function( event )
-{
-  this.changeState( event, "hover" );
-  var e = this.customonMouseEnter( event );
-  if ( e )
-    return e;
+Button.prototype.onMouseEnter = function(event) {
+  this.changeState(event, 'hover');
+  var e = this.customonMouseEnter(event);
+  if (e) return e;
 };
 
-Button.prototype.onMouseLeave = function( event )
-{
-  this.changeState( event, "null" );
-  var e = this.customonMouseLeave( event );
-  if ( e )
-    return e;
+Button.prototype.onMouseLeave = function(event) {
+  this.changeState(event, 'null');
+  var e = this.customonMouseLeave(event);
+  if (e) return e;
 };
 
-Button.prototype.changeState = function( event, type )
-{
+Button.prototype.changeState = function(event, type) {
   var dir = 0;
-  switch( type )
-  {
-    case "hover":
+  switch (type) {
+    case 'hover':
       dir = 1;
       break;
-    case "active":
+    case 'active':
       dir = 2;
       break;
     default:
       dir = 0;
   }
-  if ( this.direction == "horizontal" )
-  {
+  if (this.direction == 'horizontal') {
     if (this.spriteRenderer)
-      this.spriteRenderer.setFrame( this.spriteRenderer.startFrame + dir );
-  }
-  else
-  {
+      this.spriteRenderer.setFrame(this.spriteRenderer.startFrame + dir);
+  } else {
     if (this.spriteRenderer)
-      this.spriteRenderer.setLine( this.spriteRenderer.startLine + dir );
+      this.spriteRenderer.setLine(this.spriteRenderer.startLine + dir);
   }
 };
 

@@ -1,9 +1,9 @@
-import GUIWindow from './GUIWindow';
+import Window from './Window';
 import Button from './Button';
 import ShopItem from './ShopItem';
 
 export default {
-  Window: GUIWindow,
+  Window,
   Button,
   ShopItem,
 };
