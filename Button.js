@@ -1,3 +1,13 @@
+import DE from '@dreamirl/dreamengine';
+
+/**
+ * @author Inateno / http://inateno.com / http://dreamirl.com
+ */
+
+/**
+ * @constructor ShopItem
+ * @augments DE.GameObject
+ */
 /**
  *
  * @example var button = new DE.Button( {
@@ -18,72 +28,80 @@
  *   }
  * } );
  */
-import DE from '@dreamirl/dreamengine';
+export default class Button extends DE.GameObject
+{
+  constructor(objectParams, buttonParams, events) {
+    let hitarea = null;
+    // todo looks like the collider (at least rectangle) isn't working
+    if (!buttonParams.collider) {
+      hitarea = null; // image will be used as it is
+    } else if (buttonParams.collider.radius) {
+      hitarea = new DE.PIXI.Circle(
+        buttonParams.collider.x || 0,
+        buttonParams.collider.y || 0,
+        buttonParams.collider.radius,
+      );
+    } else if (buttonParams.collider.width) {
+      hitarea = new DE.PIXI.Rectangle(
+        buttonParams.collider.x || 0,
+        buttonParams.collider.y || 0,
+        buttonParams.collider.width,
+        buttonParams.collider.height || buttonParams.collider.width,
+      );
+    }
 
-function Button(objectParams, buttonParams, events) {
-  let hitarea = null;
-  if (!buttonParams.collider) {
-    hitarea = null; // image will be used as it is
-  } else if (buttonParams.collider.radius) {
-    hitarea = new DE.PIXI.Circle(
-      buttonParams.collider.x || 0,
-      buttonParams.collider.y || 0,
-      buttonParams.collider.radius,
+    var spriteRd = new DE.SpriteRenderer(buttonParams.spriteRenderer);
+    var textRd;
+    var renderers = [spriteRd];
+    if (buttonParams.textRenderer || buttonParams.text) {
+      textRd = new DE.TextRenderer(buttonParams.text, buttonParams.textRenderer);
+      renderers.push(textRd);
+    }
+
+    super(
+      Object.assign(objectParams, {
+        renderers,
+        cursor: 'pointer',
+        interactive: true,
+        hitarea,
+      })
     );
-  } else if (buttonParams.collider.width) {
-    hitarea = new DE.PIXI.Rectangle(
-      buttonParams.collider.x || 0,
-      buttonParams.collider.y || 0,
-      buttonParams.collider.width,
-      buttonParams.collider.height || buttonParams.collider.width,
-    );
+
+    this.direction = buttonParams.direction || 'horizontal';
+
+    this.spriteRenderer = spriteRd;
+    this.textRenderer = textRd;
+
+    this.customonMouseClick = function() {};
+    this.customonMouseEnter = function() {};
+    this.customonMouseLeave = function() {};
+    this.customonMouseDown = function() {};
+    this.customonMouseUp = function() {};
+    this.customonMouseUpOutside = function() {};
+    for (var i in events) this['custom' + i] = events[i];
+    this.stateOnClick = buttonParams.stateOnClick || 'hover';
+    this.stateOnUp = buttonParams.stateOnUp || 'hover';
+
+    this.sound = buttonParams.sound;
+
+    this.pointertap = this.onMouseClick;
+    this.pointerover = this.onMouseEnter;
+    this.pointerout = this.onMouseLeave;
+    this.pointerdown = this.onMouseDown;
+    this.pointerup = this.onMouseUp;
+    this.pointerupoutside = this.onMouseUpOutside;
+
+    if (buttonParams.icon) {
+      var icon = new DE.SpriteRenderer(buttonParams.icon);
+      this.addRenderer(icon);
+      let textWidth = DE.PIXI.TextMetrics.measureText(
+        textRd.text,
+        textRd.style,
+      ).width;
+      icon.x = (textWidth / 2 + (icon.margin || icon.width / 2)) >> 0;
+    }
   }
-
-  let spriteRd = new DE.SpriteRenderer(buttonParams.spriteRenderer);
-  let textRd;
-  let renderers = [spriteRd];
-  if (buttonParams.textRenderer || buttonParams.text) {
-    textRd = new DE.TextRenderer(buttonParams.text, buttonParams.textRenderer);
-    renderers.push(textRd);
-  }
-
-  DE.GameObject.call(
-    this,
-    Object.assign(objectParams, {
-      renderers,
-      cursor: 'pointer',
-      interactive: true,
-      hitarea,
-      pointertap: this.onMouseClick,
-      pointerover: this.onMouseEnter,
-      pointerout: this.onMouseLeave,
-      pointerdown: this.onMouseDown,
-      pointerup: this.onMouseUp,
-      pointerupoutside: this.onMouseUpOutside,
-    }),
-  );
-
-  this.direction = buttonParams.direction || 'horizontal';
-
-  this.spriteRenderer = spriteRd;
-  this.textRenderer = textRd;
-
-  this.customonMouseClick = function() {};
-  this.customonMouseEnter = function() {};
-  this.customonMouseLeave = function() {};
-  this.customonMouseDown = function() {};
-  this.customonMouseUp = function() {};
-  this.customonMouseUpOutside = function() {};
-  for (var i in events) this['custom' + i] = events[i];
-  this.stateOnClick = buttonParams.stateOnClick || 'hover';
-  this.stateOnUp = buttonParams.stateOnUp || 'hover';
-
-  this.sound = buttonParams.sound;
 }
-
-Button.prototype = new DE.GameObject();
-Button.prototype.constructor = Button;
-Button.prototype.supr = DE.GameObject.prototype;
 
 Button.prototype.defaultSound = undefined; // define this for a default sounds applied on all buttons
 Button.prototype.onMouseClick = function(event) {
@@ -147,5 +165,3 @@ Button.prototype.changeState = function(event, type) {
       this.spriteRenderer.setLine(this.spriteRenderer.startLine + dir);
   }
 };
-
-export default Button;
