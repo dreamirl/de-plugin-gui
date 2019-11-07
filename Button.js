@@ -68,7 +68,7 @@ export default class Button extends DE.GameObject
     );
 
     this.direction = buttonParams.direction || 'horizontal';
-
+    this.locked = buttonParams.locked || false;
     this.spriteRenderer = spriteRd;
     this.textRenderer = textRd;
 
@@ -103,8 +103,18 @@ export default class Button extends DE.GameObject
   }
 }
 
+Button.prototype.lock = function(value) {
+  this.locked = value === false ? false : true;
+  this.changeState();
+  this.onLock();
+};
+Button.prototype.onLock = function() {};
+
 Button.prototype.defaultSound = undefined; // define this for a default sounds applied on all buttons
 Button.prototype.onMouseClick = function(event) {
+  if (this.locked) {
+    return;
+  }
   if (this.sound || Button.prototype.defaultSound)
     DE.Audio.fx.play(this.sound || Button.prototype.defaultSound);
   this.changeState(event, this.stateOnClick);
@@ -114,18 +124,27 @@ Button.prototype.onMouseClick = function(event) {
 };
 // let user choose if he want to use it
 Button.prototype.onMouseUp = function(event) {
+  if (this.locked) {
+    return;
+  }
   this.changeState(event, this.stateOnUp);
   this.customonMouseUp(event);
   return true;
 };
 
 Button.prototype.onMouseUpOutside = function(event) {
+  if (this.locked) {
+    return;
+  }
   this.changeState(event, this.stateOnUp);
   this.customonMouseUpOutside(event);
   return true;
 };
 
 Button.prototype.onMouseDown = function(event) {
+  if (this.locked) {
+    return;
+  }
   this.changeState(event, 'active');
   var e = this.customonMouseDown(event);
   if (e) return e;
@@ -134,12 +153,18 @@ Button.prototype.onMouseDown = function(event) {
 };
 
 Button.prototype.onMouseEnter = function(event) {
+  if (this.locked) {
+    return;
+  }
   this.changeState(event, 'hover');
   var e = this.customonMouseEnter(event);
   if (e) return e;
 };
 
 Button.prototype.onMouseLeave = function(event) {
+  if (this.locked) {
+    return;
+  }
   this.changeState(event, 'null');
   var e = this.customonMouseLeave(event);
   if (e) return e;

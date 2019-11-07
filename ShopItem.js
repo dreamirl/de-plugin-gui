@@ -16,19 +16,25 @@ export default class ShopItem extends DE.GameObject
 
     super(
       Object.assign(objectParams, {
-        alpha: 0.8,
+        alpha: 0.9,
         renderers: [new DE.SpriteRenderer(customParams.frame)],
         cursor: 'pointer',
         interactive: true,
         pointerover: function() {
+          if (this.locked) {
+            return;
+          }
           this.alpha = 1;
         },
         pointerout: function() {
-          this.alpha = 0.8;
+          this.alpha = 0.9;
         },
         // clic on the frame = route to product's page
         // custom implementation required
         pointerup: function(e) {
+          if (this.locked) {
+            return;
+          }
           DE.Platform.pushAnalytic('shop-item-click', { productID });
           DE.trigger('shop-item-click', productID);
           this.onFrameClick();
@@ -72,7 +78,7 @@ export default class ShopItem extends DE.GameObject
      * one buy button = one currency, make it easy
      */
     const isPlatformPurchase = DE.Platform.shop.isPlatformPurchase(customParams);
-    this.buyButton = new Button(
+    this.button = new Button(
       {
         zindex: 1,
         x: customParams.button.x,
@@ -93,9 +99,28 @@ export default class ShopItem extends DE.GameObject
         onMouseClick: () => this.onBuy(productID, isPlatformPurchase)
       },
     );
+    
+    this.add(this.title, this.button, this.itemImage);
 
-    this.add(this.title, this.buyButton, this.itemImage);
+    if (customParams.modifierWhenOwned
+      && customParams.owned) {
+      this.lock();
+      this.button.lock();
+      customParams.modifierWhenOwned.call(this);
+    } else if (customParams.modifierWhenCurrencyLow
+      && customParams.userCurrency
+      && customParams.userCurrency < customParams.price) {
+      this.button.lock();
+      customParams.modifierWhenCurrencyLow.call(this);
+    }
   }
+
+  lock(value) {
+    this.locked = value === false ? false : true;
+    this.onLock();
+  }
+
+  onLock() {}
 
   onFrameClick() {
     // console.log('empty onFrameClick function');
