@@ -132,18 +132,18 @@ export default class ShopItem extends DE.GameObject
     if (isPlatformPurchase) {
       DE.Platform.shop
         .purchase(productID)
-        .then((d) => {
+        .then((purchase) => {
           DE.Platform.pushAnalytic('shop-item-store-purchase-complete', {
             productID,
           });
-          DE.trigger('shop-item-store-purchase-complete', productID);
+          DE.trigger('shop-item-store-purchase-complete', productID, purchase);
         })
         .catch((e) => {
           DE.Platform.pushAnalytic('shop-item-store-purchase-fail', {
             productID,
             error: e,
           });
-          DE.trigger('shop-item-store-purchase-fail', e, productID);
+          DE.trigger('shop-item-store-purchase-fail', productID, e);
           console.error('purchase failed', e);
         });
     } else {
