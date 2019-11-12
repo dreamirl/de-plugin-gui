@@ -108,7 +108,6 @@ export default class ShopItem extends DE.GameObject
       this.button.lock();
       customParams.modifierWhenOwned.call(this);
     } else if (customParams.modifierWhenCurrencyLow
-      && customParams.userCurrency
       && customParams.userCurrency < customParams.price) {
       this.button.lock();
       customParams.modifierWhenCurrencyLow.call(this);
@@ -136,15 +135,14 @@ export default class ShopItem extends DE.GameObject
           DE.Platform.pushAnalytic('shop-item-store-purchase-complete', {
             productID,
           });
-          DE.trigger('shop-item-store-purchase-complete', productID, purchase);
+          DE.trigger('shop-item-store-purchase-complete', purchase, productID);
         })
         .catch((e) => {
           DE.Platform.pushAnalytic('shop-item-store-purchase-fail', {
             productID,
             error: e,
           });
-          DE.trigger('shop-item-store-purchase-fail', productID, e);
-          console.error('purchase failed', e);
+          DE.trigger('shop-item-store-purchase-fail', e, productID);
         });
     } else {
       DE.Platform.pushAnalytic('shop-item-currency-purchase', {
