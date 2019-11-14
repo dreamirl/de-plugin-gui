@@ -156,7 +156,7 @@ export default class Window extends DE.GameObject
       y: -height / 2 + (params.content.y || 0),
       zindex: 1,
     });
-    this.content.contentWidth = width - (params.content.x * 2);
+    this.content.contentWidth = params.content.width || width - params.content.x;
 
     this.add(this.header, this.content);
 
