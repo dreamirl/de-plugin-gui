@@ -42,7 +42,7 @@ export default class TabNavigation extends DE.GameObject
 
     params.tabs.forEach((tabArgs, i) => {
       let tab = this.createTab(tabArgs, i);
-      this.tabsByName[tab.name];
+      this.tabsByName[tab.name] = tab;
       this.tabs.push(tab);
     });
 
@@ -50,6 +50,11 @@ export default class TabNavigation extends DE.GameObject
   }
 
   navigateTo(target) {
+    this.setActiveTab(target)
+    this.currentTab.customonMouseClick();
+  }
+
+  setActiveTab(target) {
     this.tabs.forEach(tab => {
       tab.renderer.currentLine = 0;
     });
@@ -58,6 +63,10 @@ export default class TabNavigation extends DE.GameObject
       target.renderer.currentLine = 1;
       this.currentTab = target;
     } else {
+      if (!this.tabsByName[target]) {
+        console.error('Tabs.navigateTo cannot find tabs named', target, 'tabs by name:', this.tabsByName);
+        return;
+      }
       this.tabsByName[target].renderer.currentLine = 1;
       this.currentTab = this.tabsByName[target];
     }
@@ -78,7 +87,7 @@ export default class TabNavigation extends DE.GameObject
       {
         onMouseClick: function() {
           tabArgs.onMouseClick();
-          self.navigateTo(this);
+          self.setActiveTab(this);
         }
       },
     );
