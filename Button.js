@@ -51,10 +51,12 @@ export default class Button extends DE.GameObject
     }
 
     var spriteRd = new DE.SpriteRenderer(buttonParams.spriteRenderer);
+    spriteRd.zindex = 1;
     var textRd;
     var renderers = [spriteRd];
     if (buttonParams.textRenderer || buttonParams.text) {
       textRd = new DE.TextRenderer(buttonParams.text, buttonParams.textRenderer);
+      textRd.zindex = 2;
       renderers.push(textRd);
     }
 
@@ -93,6 +95,7 @@ export default class Button extends DE.GameObject
 
     if (buttonParams.icon) {
       var icon = new DE.SpriteRenderer(buttonParams.icon);
+      icon.zindex = 3;
       this.addRenderer(icon);
       let textWidth = DE.PIXI.TextMetrics.measureText(
         textRd.text,
@@ -105,6 +108,7 @@ export default class Button extends DE.GameObject
 
 Button.prototype.lock = function(value) {
   this.locked = value === false ? false : true;
+  this.cursor = this.locked ? 'null' : 'pointer';
   this.changeState();
   this.onLock();
 };
