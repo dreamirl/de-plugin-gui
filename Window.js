@@ -12,6 +12,10 @@ import Button from './Button';
 export default class Window extends DE.GameObject
 {
   constructor(params) {
+    const width = params.width;
+    const height = params.height;
+    delete params.width;
+    delete params.height;
     super(
       Object.assign({
         zindex: 1000,
@@ -35,13 +39,26 @@ export default class Window extends DE.GameObject
     if (params.useBackgroundLayer) {
       params.layer = Object.assign(
         {
-          width: params.width * 2,
-          height: params.height * 2,
+          width: width * 2,
+          height: height * 2,
           alpha: 0.7,
           color: '0x010101',
         },
         params.layer,
       );
+      
+      if (!params.layer.renderer) {
+        params.layer.renderer = new DE.RectRenderer(
+          params.layer.width,
+          params.layer.height,
+          params.layer.color,
+          {
+            fill: true,
+            x: -params.layer.width / 2,
+            y: -params.layer.height / 2,
+          },
+        );
+      }
       this.bgLayer = new DE.GameObject(
         Object.assign(
           {
@@ -54,16 +71,7 @@ export default class Window extends DE.GameObject
               params.layer.width,
               params.layer.height,
             ),
-            renderer: new DE.RectRenderer(
-              params.layer.width,
-              params.layer.height,
-              params.layer.color,
-              {
-                fill: true,
-                x: -params.layer.width / 2,
-                y: -params.layer.height / 2,
-              },
-            ),
+            renderer: params.layer.renderer,
             pointerup: (e) => {
               if (params.closeOnLayerClick !== false) {
                 this.hide();
@@ -94,10 +102,10 @@ export default class Window extends DE.GameObject
         frameRenderer = new DE.NineSliceRenderer(
           {
             textureName: params.frame.spriteName || params.frame.textureName,
-            x: -params.width / 2,
-            y: -params.height / 2,
-            width: params.width,
-            height: params.height,
+            x: -width / 2,
+            y: -height / 2,
+            width: width,
+            height: height,
           },
           params.frame.left,
           params.frame.top,
@@ -112,21 +120,21 @@ export default class Window extends DE.GameObject
 
       default:
         frameRenderer = new DE.RectRenderer(
-          params.width,
-          params.height,
+          width,
+          height,
           params.frame.color,
           {
             lineStyle: params.frame.lineStyle,
             fill: true,
-            x: -params.width / 2,
-            y: -params.height / 2,
+            x: -width / 2,
+            y: -height / 2,
           },
         );
     }
     this.add(
       new DE.GameObject({
         interactive: true,
-        hitarea: new DE.PIXI.Rectangle(0, 0, params.width, params.height),
+        hitarea: new DE.PIXI.Rectangle(0, 0, width, height),
         renderer: frameRenderer,
         pointerup: (e) => {
           // prevent click propagating behind the frame
@@ -137,51 +145,52 @@ export default class Window extends DE.GameObject
 
     params.header = Object.assign({}, params.header);
     this.header = new DE.GameObject({
-      x: -params.width / 2 + (params.header.x || 0),
-      y: -params.height / 2 + (params.header.y || 0),
+      x: -width / 2 + (params.header.x || 0),
+      y: -height / 2 + (params.header.y || 0),
       zindex: 2,
     });
 
     params.content = Object.assign({}, params.content);
     this.content = new DE.GameObject({
-      x: -params.width / 2 + (params.content.x || 0),
-      y: -params.height / 2 + (params.content.y || 0),
+      x: -width / 2 + (params.content.x || 0),
+      y: -height / 2 + (params.content.y || 0),
       zindex: 1,
-      width: params.width - (params.content.x * 2),
     });
-    this.content.contentWidth = params.width - (params.content.x * 2);
+    this.content.contentWidth = width - (params.content.x * 2);
 
-    // this.closeButton = new Button();
-    if (!params.button) {
-      params.button = {};
-    } else {
-      params.button.offsetX = params.button.x;
-      params.button.offsetY = params.button.y;
-      delete params.button.x;
-      delete params.button.y;
-    }
-    this.closeButton = new Button(
-      {
-        x: params.width / 2 + (params.button.offsetX || 0),
-        y: -params.height / 2 + (params.button.offsetY || 0),
-        zindex: 50,
-      },
-      {
-        spriteRenderer: Object.assign(
-          { spriteName: 'close-button' },
-          params.button,
-        ),
-        collider: Object.assign({ width: 50, height: 50 }, params.button),
-        direction: params.button.direction || 'horizontal',
-      },
-      {
-        onMouseClick: function() {
-          self.hide();
+    this.add(this.header, this.content);
+
+    if (!params.noCloseBtn) {
+      if (!params.button) {
+        params.button = {};
+      } else {
+        params.button.offsetX = params.button.x;
+        params.button.offsetY = params.button.y;
+        delete params.button.x;
+        delete params.button.y;
+      }
+      this.closeButton = new Button(
+        {
+          x: width / 2 + (params.button.offsetX || 0),
+          y: -height / 2 + (params.button.offsetY || 0),
+          zindex: 50,
         },
-      },
-    );
-
-    this.add(this.header, this.content, this.closeButton);
+        {
+          spriteRenderer: Object.assign(
+            { spriteName: 'close-button' },
+            params.button,
+          ),
+          collider: Object.assign({ width: 50, height: 50 }, params.button),
+          direction: params.button.direction || 'horizontal',
+        },
+        {
+          onMouseClick: function() {
+            self.hide();
+          },
+        },
+      );
+      this.add(this.closeButton);
+    }
   }
 
   hide() {
