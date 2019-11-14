@@ -36,6 +36,7 @@ export default class TabNavigation extends DE.GameObject
     this.itemWidth = params.width;
     this.startX = this.x;
     this.startY = this.y;
+    this.direction = params.items.direction || 'horizontal';
 
     this.tabsByName = {};
     this.tabs = [];
@@ -78,10 +79,14 @@ export default class TabNavigation extends DE.GameObject
 
   createTab(tabArgs, i) {
     var self = this;
+    
+    var xPos = this.direction === 'horizontal' ? (this.items.width + this.items.padding) * i : 0;
+    var yPos = this.direction === 'vertical' ? (this.items.height + this.items.padding) * i : 0;
     return new Button(
       {
         name: tabArgs.name,
-        x: (this.items.width + this.items.padding) * i
+        x: xPos,
+        y: yPos,
       },
       Object.assign(cloneObj(this.tabArgs), { text: tabArgs.text }),
       {
