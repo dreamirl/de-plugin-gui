@@ -152,21 +152,21 @@ ScrollContainer.prototype.limitScroll = function() {
   if (this.scrollX) {
     if (this.targetContainer.x < this.hitArea.width - contentBounds.width) {
       this.inertia.x = 0;
-      this.targetContainer.x = this.hitArea.width - contentBounds.width;
+      this.targetContainer.x += ((this.hitArea.width - contentBounds.width) - this.targetContainer.x) * 0.075;
     }
     if (this.targetContainer.x > 0) {
       this.inertia.x = 0;
-      this.targetContainer.x = 0;
+      this.targetContainer.x += -this.targetContainer.x * 0.075;
     }
   }
   if (this.scrollY) {
     if (this.targetContainer.y < this.hitArea.height - contentBounds.height) {
       this.inertia.y = 0;
-      this.targetContainer.y = this.hitArea.height - contentBounds.height;
+      this.targetContainer.y += ((this.hitArea.height - contentBounds.height) - this.targetContainer.y) * 0.075;
     }
     if (this.targetContainer.y > 0) {
       this.inertia.y = 0;
-      this.targetContainer.y = 0;
+      this.targetContainer.y += -this.targetContainer.y * 0.075;
     }
   }
 };
