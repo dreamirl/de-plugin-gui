@@ -10,18 +10,20 @@ import ScrollContainer from './ScrollContainer';
  * @constructor Window
  * @augments DE.GameObject
  */
-export default class Window extends DE.GameObject
-{
+export default class Window extends DE.GameObject {
   constructor(params) {
     const width = params.width;
     const height = params.height;
     delete params.width;
     delete params.height;
     super(
-      Object.assign({
-        zindex: 1000,
-        enable: false,
-      }, params)
+      Object.assign(
+        {
+          zindex: 1000,
+          enable: false,
+        },
+        params,
+      ),
     );
 
     var self = this;
@@ -47,7 +49,7 @@ export default class Window extends DE.GameObject
         },
         params.layer,
       );
-      
+
       if (!params.layer.renderer) {
         params.layer.renderer = new DE.RectRenderer(
           params.layer.width,
@@ -120,17 +122,12 @@ export default class Window extends DE.GameObject
         break;
 
       default:
-        frameRenderer = new DE.RectRenderer(
-          width,
-          height,
-          params.frame.color,
-          {
-            lineStyle: params.frame.lineStyle,
-            fill: true,
-            x: -width / 2,
-            y: -height / 2,
-          },
-        );
+        frameRenderer = new DE.RectRenderer(width, height, params.frame.color, {
+          lineStyle: params.frame.lineStyle,
+          fill: true,
+          x: -width / 2,
+          y: -height / 2,
+        });
     }
     this.add(
       new DE.GameObject({
@@ -157,22 +154,28 @@ export default class Window extends DE.GameObject
       y: -height / 2 + (params.content.y || 0),
       zindex: 1,
     });
-    this.content.contentWidth = params.content.width || width - params.content.x;
-    
+    this.content.contentWidth =
+      params.content.width || width - params.content.x;
+
     this.add(this.header, this.content);
 
-    if(params.content.type == "scroll") {
-      this.scrollContent = new ScrollContainer({
-        x: -width / 2 + (params.content.x || 0),
-        y: -height / 2 + (params.content.y || 0),
-        zindex: 1,
-      }, {
-        width: params.content.width || width - params.content.x,
-        height: params.content.height || height - params.content.y,
-        scrollX: params.content.scrollX,
-        scrollY: params.content.scrollY,
-      }, this.content );
-      this.scrollContent.contentWidth = params.content.width || width - params.content.x;
+    if (params.content.type == 'scroll') {
+      this.scrollContent = new ScrollContainer(
+        {
+          x: -width / 2 + (params.content.x || 0),
+          y: -height / 2 + (params.content.y || 0),
+          zindex: 1,
+        },
+        {
+          width: params.content.width || width - params.content.x,
+          height: params.content.height || height - params.content.y,
+          scrollX: params.content.scrollX,
+          scrollY: params.content.scrollY,
+        },
+        this.content,
+      );
+      this.scrollContent.contentWidth =
+        params.content.width || width - params.content.x;
       this.add(this.scrollContent);
     }
 
@@ -219,7 +222,7 @@ export default class Window extends DE.GameObject
     console.log('hide');
     this.fadeOut(500, true);
   }
-  
+
   show() {
     this.trigger('show');
     this.trigger('visibility-changed', true);
@@ -229,7 +232,7 @@ export default class Window extends DE.GameObject
   onShow() {
     this.fadeIn(500, true);
   }
-  
+
   toggle(value) {
     if (!!value || this.enable === false) {
       this.show();

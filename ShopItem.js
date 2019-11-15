@@ -9,8 +9,7 @@ import Button from './Button';
  * @constructor ShopItem
  * @augments DE.GameObject
  */
-export default class ShopItem extends DE.GameObject
-{
+export default class ShopItem extends DE.GameObject {
   constructor(objectParams, customParams) {
     const productID = customParams.productID || customParams.id;
 
@@ -76,7 +75,9 @@ export default class ShopItem extends DE.GameObject
     /**
      * one buy button = one currency, make it easy
      */
-    const isPlatformPurchase = DE.Platform.shop.isPlatformPurchase(customParams);
+    const isPlatformPurchase = DE.Platform.shop.isPlatformPurchase(
+      customParams,
+    );
     this.button = new Button(
       {
         zindex: 1,
@@ -95,19 +96,20 @@ export default class ShopItem extends DE.GameObject
         icon: customParams.button.icon,
       },
       {
-        onMouseClick: () => this.onBuy(productID, isPlatformPurchase)
+        onMouseClick: () => this.onBuy(productID, isPlatformPurchase),
       },
     );
-    
+
     this.add(this.title, this.button, this.itemImage);
 
-    if (customParams.modifierWhenOwned
-      && customParams.owned) {
+    if (customParams.modifierWhenOwned && customParams.owned) {
       this.lock();
       this.button.lock();
       customParams.modifierWhenOwned.call(this);
-    } else if (customParams.modifierWhenCurrencyLow
-      && customParams.userCurrency < customParams.price) {
+    } else if (
+      customParams.modifierWhenCurrencyLow &&
+      customParams.userCurrency < customParams.price
+    ) {
       this.button.lock();
       customParams.modifierWhenCurrencyLow.call(this);
     }

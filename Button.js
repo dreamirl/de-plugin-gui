@@ -28,8 +28,7 @@ import DE from '@dreamirl/dreamengine';
  *   }
  * } );
  */
-export default class Button extends DE.GameObject
-{
+export default class Button extends DE.GameObject {
   constructor(objectParams, buttonParams, events) {
     let hitarea = null;
     // todo looks like the collider (at least rectangle) isn't working
@@ -55,7 +54,10 @@ export default class Button extends DE.GameObject
     var textRd;
     var renderers = [spriteRd];
     if (buttonParams.textRenderer || buttonParams.text) {
-      textRd = new DE.TextRenderer(buttonParams.text, buttonParams.textRenderer);
+      textRd = new DE.TextRenderer(
+        buttonParams.text,
+        buttonParams.textRenderer,
+      );
       textRd.zindex = 2;
       renderers.push(textRd);
     }
@@ -66,7 +68,7 @@ export default class Button extends DE.GameObject
         cursor: 'pointer',
         interactive: true,
         hitarea,
-      })
+      }),
     );
 
     this.direction = buttonParams.direction || 'horizontal';
@@ -97,10 +99,8 @@ export default class Button extends DE.GameObject
       var icon = new DE.SpriteRenderer(buttonParams.icon);
       icon.zindex = 3;
       this.addRenderer(icon);
-      let textWidth = DE.PIXI.TextMetrics.measureText(
-        textRd.text,
-        textRd.style,
-      ).width;
+      let textWidth = DE.PIXI.TextMetrics.measureText(textRd.text, textRd.style)
+        .width;
       icon.x = (textWidth / 2 + (icon.margin || icon.width / 2)) >> 0;
     }
   }

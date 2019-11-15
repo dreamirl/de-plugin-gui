@@ -28,8 +28,7 @@ import Button from './Button';
   ]
 });
 */
-export default class TabNavigation extends DE.GameObject
-{
+export default class TabNavigation extends DE.GameObject {
   constructor(params) {
     super(params);
 
@@ -51,12 +50,12 @@ export default class TabNavigation extends DE.GameObject
   }
 
   navigateTo(target) {
-    this.setActiveTab(target)
+    this.setActiveTab(target);
     this.currentTab.customonMouseClick();
   }
 
   setActiveTab(target) {
-    this.tabs.forEach(tab => {
+    this.tabs.forEach((tab) => {
       tab.renderer.currentLine = 0;
     });
 
@@ -65,7 +64,12 @@ export default class TabNavigation extends DE.GameObject
       this.currentTab = target;
     } else {
       if (!this.tabsByName[target]) {
-        console.error('Tabs.navigateTo cannot find tabs named', target, 'tabs by name:', this.tabsByName);
+        console.error(
+          'Tabs.navigateTo cannot find tabs named',
+          target,
+          'tabs by name:',
+          this.tabsByName,
+        );
         return;
       }
       this.tabsByName[target].renderer.currentLine = 1;
@@ -79,9 +83,15 @@ export default class TabNavigation extends DE.GameObject
 
   createTab(tabArgs, i) {
     var self = this;
-    
-    var xPos = this.direction === 'horizontal' ? (this.items.width + this.items.padding) * i : 0;
-    var yPos = this.direction === 'vertical' ? (this.items.height + this.items.padding) * i : 0;
+
+    var xPos =
+      this.direction === 'horizontal'
+        ? (this.items.width + this.items.padding) * i
+        : 0;
+    var yPos =
+      this.direction === 'vertical'
+        ? (this.items.height + this.items.padding) * i
+        : 0;
     return new Button(
       {
         name: tabArgs.name,
@@ -93,7 +103,7 @@ export default class TabNavigation extends DE.GameObject
         onMouseClick: function() {
           tabArgs.onMouseClick();
           self.setActiveTab(this);
-        }
+        },
       },
     );
   }
@@ -101,4 +111,4 @@ export default class TabNavigation extends DE.GameObject
 
 var cloneObj = function(original) {
   return JSON.parse(JSON.stringify(original));
-}
+};

@@ -9,5 +9,5 @@ export default {
   Button,
   ShopItem,
   TabNavigation,
-  ScrollContainer
+  ScrollContainer,
 };
