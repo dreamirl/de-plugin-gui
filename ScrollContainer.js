@@ -149,24 +149,27 @@ ScrollContainer.prototype.scroll = function(x, y) {
 ScrollContainer.prototype.limitScroll = function() {
   var contentBounds = this.targetContainer.getBounds();
 
+  if(contentBounds.width < this.hitArea.width && this.scrollX) this.targetContainer.x = 0;
+  if(contentBounds.height < this.hitArea.height && this.scrollY) this.targetContainer.y = -5;
+
   if (this.scrollX) {
-    if (this.targetContainer.x < this.hitArea.width - contentBounds.width) {
+    if (this.targetContainer.x < this.hitArea.width - contentBounds.width - 10) {
       this.inertia.x = 0;
-      this.targetContainer.x += ((this.hitArea.width - contentBounds.width) - this.targetContainer.x) * 0.075;
+      this.targetContainer.x += ((this.hitArea.width - contentBounds.width - 10) - this.targetContainer.x) * 0.05;
     }
     if (this.targetContainer.x > 0) {
       this.inertia.x = 0;
-      this.targetContainer.x += -this.targetContainer.x * 0.075;
+      this.targetContainer.x += -this.targetContainer.x * 0.05;
     }
   }
   if (this.scrollY) {
-    if (this.targetContainer.y < this.hitArea.height - contentBounds.height) {
+    if (this.targetContainer.y < this.hitArea.height - contentBounds.height - 10) {
       this.inertia.y = 0;
-      this.targetContainer.y += ((this.hitArea.height - contentBounds.height) - this.targetContainer.y) * 0.075;
+      this.targetContainer.y += ((this.hitArea.height - contentBounds.height - 10) - this.targetContainer.y) * 0.05;
     }
     if (this.targetContainer.y > 0) {
       this.inertia.y = 0;
-      this.targetContainer.y += -this.targetContainer.y * 0.075;
+      this.targetContainer.y += -this.targetContainer.y * 0.05;
     }
   }
 };
