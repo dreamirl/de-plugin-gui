@@ -1,5 +1,6 @@
 import DE from '@dreamirl/dreamengine';
 import Button from './Button';
+import ScrollContainer from './ScrollContainer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -157,8 +158,23 @@ export default class Window extends DE.GameObject
       zindex: 1,
     });
     this.content.contentWidth = params.content.width || width - params.content.x;
-
+    
     this.add(this.header, this.content);
+
+    if(params.content.type == "scroll") {
+      this.scrollContent = new ScrollContainer({
+        x: -width / 2 + (params.content.x || 0),
+        y: -height / 2 + (params.content.y || 0),
+        zindex: 1,
+      }, {
+        width: params.content.width || width - params.content.x,
+        height: params.content.height || height - params.content.y,
+        scrollX: params.content.scrollX,
+        scrollY: params.content.scrollY,
+      }, this.content );
+      this.scrollContent.contentWidth = params.content.width || width - params.content.x;
+      this.add(this.scrollContent);
+    }
 
     if (!params.noCloseBtn) {
       if (!params.button) {

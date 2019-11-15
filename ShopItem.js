@@ -38,7 +38,6 @@ export default class ShopItem extends DE.GameObject
           DE.Platform.pushAnalytic('shop-item-click', { productID });
           DE.trigger('shop-item-click', productID);
           this.onFrameClick();
-          e.stopPropagation();
         },
       }),
     );
