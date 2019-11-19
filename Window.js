@@ -65,7 +65,7 @@ export default class Window extends DE.GameObject {
       this.bgLayer = new DE.GameObject(
         Object.assign(
           {
-            zindex: 0,
+            zindex: -2,
             cursor: 'pointer',
             interactive: true,
             hitarea: new DE.PIXI.Rectangle(
@@ -131,6 +131,7 @@ export default class Window extends DE.GameObject {
     }
     this.add(
       new DE.GameObject({
+        zindex: -1,
         interactive: true,
         hitarea: new DE.PIXI.Rectangle(0, 0, width, height),
         renderer: frameRenderer,
@@ -179,15 +180,11 @@ export default class Window extends DE.GameObject {
       this.add(this.scrollContent);
     }
 
-    if (!params.noCloseBtn) {
-      if (!params.button) {
-        params.button = {};
-      } else {
-        params.button.offsetX = params.button.x;
-        params.button.offsetY = params.button.y;
-        delete params.button.x;
-        delete params.button.y;
-      }
+    if (params.button) {
+      params.button.offsetX = params.button.x;
+      params.button.offsetY = params.button.y;
+      delete params.button.x;
+      delete params.button.y;
       this.closeButton = new Button(
         {
           x: width / 2 + (params.button.offsetX || 0),
