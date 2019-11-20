@@ -187,10 +187,20 @@ Button.prototype.changeState = function(event, type) {
       dir = 0;
   }
   if (this.direction == 'horizontal') {
-    if (this.spriteRenderer)
-      this.spriteRenderer.setFrame(this.spriteRenderer.startFrame + dir);
+    if (this.spriteRenderer) {
+      if (this.spriteRenderer.totalFrame === 1) {
+        this.spriteRenderer.alpha = 0.8 + 0.1 * dir;
+      } else {
+        this.spriteRenderer.setFrame(this.spriteRenderer.startFrame + dir);
+      }
+    }
   } else {
-    if (this.spriteRenderer)
-      this.spriteRenderer.setLine(this.spriteRenderer.startLine + dir);
+    if (this.spriteRenderer) {
+      if (this.spriteRenderer.totalLine === 1) {
+        this.spriteRenderer.alpha = 0.8 + 0.1 * dir;
+      } else {
+        this.spriteRenderer.setLine(this.spriteRenderer.startLine + dir);
+      }
+    }
   }
 };
