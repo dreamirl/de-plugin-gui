@@ -226,6 +226,4 @@ ScrollContainer.prototype.updateInertia = function() {
     this.inertia.x *= 0.95;
     this.inertia.y *= 0.95;
   }
-
-  console.log(this.inertia);
 };
