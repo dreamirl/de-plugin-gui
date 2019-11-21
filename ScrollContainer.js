@@ -117,6 +117,15 @@ export default class ScrollContainer extends DE.GameObject {
         new Date() - this.lastMoveTime < 20
       ) {
         this.inertia = Object.assign({}, this.lastDist);
+
+        if(this.targetContainer.x > 0 ||
+          this.targetContainer.x < this.viewLimit.width - this.contentBounds.width - 10) {
+          this.inertia.x = 0;
+        }
+        if(this.targetContainer.y > 0 ||
+          this.targetContainer.y < this.viewLimit.height - this.contentBounds.height - 10) {
+          this.inertia.y = 0;    
+        }
       }
       this.touchContainer.interactive = false;
       this.startPoint = undefined;
@@ -147,29 +156,27 @@ ScrollContainer.prototype.scroll = function(x, y) {
 };
 
 ScrollContainer.prototype.limitScroll = function() {
-  var contentBounds = this.targetContainer.getBounds();
+  this.contentBounds = this.targetContainer.getBounds();
 
-  if(contentBounds.width < this.hitArea.width && this.scrollX) this.targetContainer.x = 0;
-  if(contentBounds.height < this.hitArea.height && this.scrollY) this.targetContainer.y = -5;
+  this.viewLimit = {
+    width: Math.min(this.contentBounds.width, this.hitArea.width),
+    height: Math.min(this.contentBounds.height, this.hitArea.height),
+  };
 
   if (this.scrollX) {
-    if (this.targetContainer.x < this.hitArea.width - contentBounds.width - 10) {
-      this.inertia.x = 0;
-      this.targetContainer.x += ((this.hitArea.width - contentBounds.width - 10) - this.targetContainer.x) * 0.05;
-    }
     if (this.targetContainer.x > 0) {
-      this.inertia.x = 0;
       this.targetContainer.x += -this.targetContainer.x * 0.05;
+    }
+    else if (this.targetContainer.x < this.viewLimit.width - this.contentBounds.width - 10) {
+      this.targetContainer.x += ((this.viewLimit.width - this.contentBounds.width - 10) - this.targetContainer.x) * 0.05;
     }
   }
   if (this.scrollY) {
-    if (this.targetContainer.y < this.hitArea.height - contentBounds.height - 10) {
-      this.inertia.y = 0;
-      this.targetContainer.y += ((this.hitArea.height - contentBounds.height - 10) - this.targetContainer.y) * 0.05;
-    }
     if (this.targetContainer.y > 0) {
-      this.inertia.y = 0;
       this.targetContainer.y += -this.targetContainer.y * 0.05;
+    } 
+    else if (this.targetContainer.y < this.viewLimit.height - this.contentBounds.height - 10) {
+      this.targetContainer.y += ((this.viewLimit.height - this.contentBounds.height - 10) - this.targetContainer.y) * 0.05;
     }
   }
 };
@@ -198,8 +205,27 @@ ScrollContainer.prototype.setTarget = function(targetContainer) {
 
 ScrollContainer.prototype.updateInertia = function() {
   if (!this.locked && this.inertia && this.targetContainer) {
+
+    this.contentBounds = this.targetContainer.getBounds();
+
+    this.viewLimit = {
+      width: Math.min(this.contentBounds.width, this.hitArea.width),
+      height: Math.min(this.contentBounds.height, this.hitArea.height),
+    };
+
+    if(this.targetContainer.x > 0 ||
+      this.targetContainer.x < this.viewLimit.width - this.contentBounds.width - 10) {
+      this.inertia.x *= 0.75;
+    }
+    if(this.targetContainer.y > 0 ||
+      this.targetContainer.y < this.viewLimit.height - this.contentBounds.height - 10) {
+      this.inertia.y *= 0.75;    
+    }
+
     this.scroll(this.inertia.x * 5, this.inertia.y * 5);
     this.inertia.x *= 0.95;
     this.inertia.y *= 0.95;
   }
+
+  console.log(this.inertia);
 };
