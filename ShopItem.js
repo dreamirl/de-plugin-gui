@@ -130,15 +130,18 @@ export default class ShopItem extends DE.GameObject {
     // "real" money purchase isn't the same behavior and process
     // than items bought with ingame currency
     if (isPlatformPurchase) {
+      DE.trigger('show-loader');
       DE.Platform.shop
         .purchase(productID)
         .then((purchase) => {
+          DE.trigger('hide-loader');
           DE.Platform.pushAnalytic('shop-item-store-purchase-complete', {
             productID,
           });
           DE.trigger('shop-item-store-purchase-complete', purchase, productID);
         })
         .catch((e) => {
+          DE.trigger('hide-loader');
           DE.Platform.pushAnalytic('shop-item-store-purchase-fail', {
             productID,
             error: e,
