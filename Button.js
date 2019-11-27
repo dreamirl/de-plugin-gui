@@ -123,7 +123,6 @@ Button.prototype.onMouseClick = function(event) {
     DE.Audio.fx.play(this.sound || Button.prototype.defaultSound);
   this.changeState(event, this.stateOnClick);
   this.customonMouseClick(event);
-  event.stopPropagation();
   return true;
 };
 // let user choose if he want to use it
