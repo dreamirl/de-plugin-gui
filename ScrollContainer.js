@@ -165,18 +165,18 @@ ScrollContainer.prototype.limitScroll = function() {
 
   if (this.scrollX) {
     if (this.targetContainer.x > 0) {
-      this.targetContainer.x += -this.targetContainer.x * 0.05;
+      this.targetContainer.x += -this.targetContainer.x * 0.1;
     }
     else if (this.targetContainer.x < this.viewLimit.width - this.contentBounds.width - 10) {
-      this.targetContainer.x += ((this.viewLimit.width - this.contentBounds.width - 10) - this.targetContainer.x) * 0.05;
+      this.targetContainer.x += ((this.viewLimit.width - this.contentBounds.width - 10) - this.targetContainer.x) * 0.1;
     }
   }
   if (this.scrollY) {
     if (this.targetContainer.y > 0) {
-      this.targetContainer.y += -this.targetContainer.y * 0.05;
+      this.targetContainer.y += -this.targetContainer.y * 0.1;
     } 
     else if (this.targetContainer.y < this.viewLimit.height - this.contentBounds.height - 10) {
-      this.targetContainer.y += ((this.viewLimit.height - this.contentBounds.height - 10) - this.targetContainer.y) * 0.05;
+      this.targetContainer.y += ((this.viewLimit.height - this.contentBounds.height - 10) - this.targetContainer.y) * 0.1;
     }
   }
 };
@@ -222,7 +222,7 @@ ScrollContainer.prototype.updateInertia = function() {
       this.inertia.y *= 0.75;    
     }
 
-    this.scroll(this.inertia.x * 5, this.inertia.y * 5);
+    this.scroll(this.inertia.x, this.inertia.y);
     this.inertia.x *= 0.95;
     this.inertia.y *= 0.95;
   }
