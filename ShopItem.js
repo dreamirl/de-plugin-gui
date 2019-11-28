@@ -106,6 +106,10 @@ export default class ShopItem extends DE.GameObject {
       this.lock();
       this.button.lock();
       customParams.modifierWhenOwned.call(this);
+    } else if (customParams.locked && customParams.modifierWhenLocked) {
+      this.lock();
+      this.button.lock();
+      customParams.modifierWhenLocked.call(this);
     } else if (
       customParams.modifierWhenCurrencyLow &&
       customParams.userCurrency < customParams.price
