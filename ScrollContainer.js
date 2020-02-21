@@ -167,16 +167,16 @@ ScrollContainer.prototype.limitScroll = function() {
     if (this.targetContainer.x > 0) {
       this.targetContainer.x += -this.targetContainer.x * 0.1;
     }
-    else if (this.targetContainer.x < this.viewLimit.width - this.contentBounds.width - 10) {
-      this.targetContainer.x += ((this.viewLimit.width - this.contentBounds.width - 10) - this.targetContainer.x) * 0.1;
+    else if (this.targetContainer.x < this.viewLimit.width - this.contentBounds.width - 45) {
+      this.targetContainer.x += ((this.viewLimit.width - this.contentBounds.width - 45) - this.targetContainer.x) * 0.1;
     }
   }
   if (this.scrollY) {
     if (this.targetContainer.y > 0) {
       this.targetContainer.y += -this.targetContainer.y * 0.1;
     } 
-    else if (this.targetContainer.y < this.viewLimit.height - this.contentBounds.height - 10) {
-      this.targetContainer.y += ((this.viewLimit.height - this.contentBounds.height - 10) - this.targetContainer.y) * 0.1;
+    else if (this.targetContainer.y < this.viewLimit.height - this.contentBounds.height - 45) {
+      this.targetContainer.y += ((this.viewLimit.height - this.contentBounds.height - 45) - this.targetContainer.y) * 0.1;
     }
   }
 };
