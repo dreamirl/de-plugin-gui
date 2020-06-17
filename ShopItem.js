@@ -137,12 +137,15 @@ export default class ShopItem extends DE.GameObject {
       DE.trigger('show-loader');
       DE.Platform.shop
         .purchase(productID)
-        .then((purchase) => {
+        .then((purchaseResponse) => {
           DE.trigger('hide-loader');
           DE.Platform.pushAnalytic('shop-item-store-purchase-complete', {
             productID,
           });
-          DE.trigger('shop-item-store-purchase-complete', purchase, productID);
+          DE.trigger('shop-item-store-purchase-complete', purchaseResponse, productID);
+          if (DE.Platform.shop.onStorePurchase) {
+            DE.Platform.shop.onStorePurchase(purchaseResponse, productID);
+          }
         })
         .catch((e) => {
           DE.trigger('hide-loader');
@@ -151,6 +154,9 @@ export default class ShopItem extends DE.GameObject {
             error: e,
           });
           DE.trigger('shop-item-store-purchase-fail', e, productID);
+          if (DE.Platform.shop.onStorePurchaseFail) {
+            DE.Platform.shop.onStorePurchaseFail(e, productID);
+          }
         });
     } else {
       DE.Platform.pushAnalytic('shop-item-currency-purchase', {
