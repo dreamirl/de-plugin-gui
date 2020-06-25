@@ -39,6 +39,7 @@ export default class ScrollContainer extends DE.GameObject {
 
     if (!scrollContainerParams) scrollContainerParams = {};
 
+    this.mouseScrollSpeed = scrollContainerParams.mouseScrollSpeed || 0.6;
     this.hitArea = new DE.PIXI.Rectangle(
       0,
       0,
@@ -133,6 +134,11 @@ export default class ScrollContainer extends DE.GameObject {
       this.lastDist = undefined;
       this.startDist = undefined;
     };
+
+    this.onscroll = function(event) {
+      this.scroll(0, this.mouseScrollSpeed * -event.deltaY);
+    }
+    window.addEventListener("wheel", (ev) => this.onscroll(ev));
 
     this.pointerup = (event) => {
       this.cleanTouch();
