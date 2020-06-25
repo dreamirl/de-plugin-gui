@@ -198,6 +198,7 @@ export default class Window extends DE.GameObject {
           ),
           collider: Object.assign({ width: 50, height: 50 }, params.button),
           direction: params.button.direction || 'horizontal',
+          sound: params.button.sound,
         },
         {
           onMouseClick: function() {
