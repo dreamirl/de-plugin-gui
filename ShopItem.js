@@ -36,6 +36,7 @@ export default class ShopItem extends DE.GameObject {
           }
           DE.Platform.pushAnalytic('shop-item-click', { productID });
           DE.trigger('shop-item-click', productID);
+          DE.Audio.fx.play(customParams.sound || Button.prototype.defaultSound);
           this.onFrameClick();
         },
       }),
@@ -94,6 +95,7 @@ export default class ShopItem extends DE.GameObject {
         },
         direction: 'horizontal',
         icon: customParams.button.icon,
+        sound: customParams.button.sound,
       },
       {
         onMouseClick: () => this.onBuy(productID, isPlatformPurchase),
