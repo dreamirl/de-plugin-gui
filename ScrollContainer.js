@@ -119,13 +119,13 @@ export default class ScrollContainer extends DE.GameObject {
       ) {
         this.inertia = Object.assign({}, this.lastDist);
 
-        if(this.targetContainer.x > 0 ||
+        if (this.targetContainer.x > 0 ||
           this.targetContainer.x < this.viewLimit.width - this.contentBounds.width - 10) {
           this.inertia.x = 0;
         }
-        if(this.targetContainer.y > 0 ||
+        if (this.targetContainer.y > 0 ||
           this.targetContainer.y < this.viewLimit.height - this.contentBounds.height - 10) {
-          this.inertia.y = 0;    
+          this.inertia.y = 0;
         }
       }
       this.touchContainer.interactive = false;
@@ -136,7 +136,9 @@ export default class ScrollContainer extends DE.GameObject {
     };
 
     this.onscroll = function(event) {
-      this.scroll(0, this.mouseScrollSpeed * -event.deltaY);
+      if (!this.locked) {
+        this.scroll(0, this.mouseScrollSpeed * -event.deltaY);
+      }
     }
     window.addEventListener("wheel", (ev) => this.onscroll(ev));
 
@@ -149,19 +151,19 @@ export default class ScrollContainer extends DE.GameObject {
   }
 }
 
-ScrollContainer.prototype.resetScroll = function() {
+ScrollContainer.prototype.resetScroll = function () {
   this.targetContainer.x = 0;
   this.targetContainer.y = 0;
 };
 
-ScrollContainer.prototype.scroll = function(x, y) {
+ScrollContainer.prototype.scroll = function (x, y) {
   if (this.scrollX) this.targetContainer.x += x;
   if (this.scrollY) this.targetContainer.y += y;
 
   this.limitScroll();
 };
 
-ScrollContainer.prototype.limitScroll = function() {
+ScrollContainer.prototype.limitScroll = function () {
   this.contentBounds = this.targetContainer.getBounds();
 
   this.viewLimit = {
@@ -180,14 +182,14 @@ ScrollContainer.prototype.limitScroll = function() {
   if (this.scrollY) {
     if (this.targetContainer.y > 0) {
       this.targetContainer.y += -this.targetContainer.y * 0.1;
-    } 
+    }
     else if (this.targetContainer.y < this.viewLimit.height - this.contentBounds.height - 45) {
       this.targetContainer.y += ((this.viewLimit.height - this.contentBounds.height - 45) - this.targetContainer.y) * 0.1;
     }
   }
 };
 
-ScrollContainer.prototype.removeTarget = function() {
+ScrollContainer.prototype.removeTarget = function () {
   this.locked = true;
   this.remove(this.containerMask);
   this.inertia = { x: 0, y: 0 };
@@ -199,7 +201,7 @@ ScrollContainer.prototype.removeTarget = function() {
   }
 };
 
-ScrollContainer.prototype.setTarget = function(targetContainer) {
+ScrollContainer.prototype.setTarget = function (targetContainer) {
   if (this.targetContainer) this.removeTarget();
 
   this.targetContainer = targetContainer;
@@ -209,7 +211,7 @@ ScrollContainer.prototype.setTarget = function(targetContainer) {
   this.resetScroll();
 };
 
-ScrollContainer.prototype.updateInertia = function() {
+ScrollContainer.prototype.updateInertia = function () {
   if (!this.locked && this.inertia && this.targetContainer) {
 
     this.contentBounds = this.targetContainer.getBounds();
@@ -219,13 +221,13 @@ ScrollContainer.prototype.updateInertia = function() {
       height: Math.min(this.contentBounds.height, this.hitArea.height),
     };
 
-    if(this.targetContainer.x > 0 ||
+    if (this.targetContainer.x > 0 ||
       this.targetContainer.x < this.viewLimit.width - this.contentBounds.width - 10) {
       this.inertia.x *= 0.75;
     }
-    if(this.targetContainer.y > 0 ||
+    if (this.targetContainer.y > 0 ||
       this.targetContainer.y < this.viewLimit.height - this.contentBounds.height - 10) {
-      this.inertia.y *= 0.75;    
+      this.inertia.y *= 0.75;
     }
 
     this.scroll(this.inertia.x, this.inertia.y);
