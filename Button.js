@@ -188,7 +188,7 @@ Button.prototype.changeState = function(event, type) {
   if (this.direction == 'horizontal') {
     if (this.spriteRenderer) {
       if (this.spriteRenderer.totalFrame === 1) {
-        if(!this.disableAlpha) {
+        if (!this.disableAlpha) {
           this.spriteRenderer.alpha = 0.8 + 0.1 * dir;
         }
       } else {
@@ -198,7 +198,7 @@ Button.prototype.changeState = function(event, type) {
   } else {
     if (this.spriteRenderer) {
       if (this.spriteRenderer.totalLine === 1) {
-        if(!this.disableAlpha) {
+        if (!this.disableAlpha) {
           this.spriteRenderer.alpha = 0.8 + 0.1 * dir;
         }
       } else {

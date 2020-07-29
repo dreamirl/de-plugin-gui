@@ -144,7 +144,11 @@ export default class ShopItem extends DE.GameObject {
           DE.Platform.pushAnalytic('shop-item-store-purchase-complete', {
             productID,
           });
-          DE.trigger('shop-item-store-purchase-complete', purchaseResponse, productID);
+          DE.trigger(
+            'shop-item-store-purchase-complete',
+            purchaseResponse,
+            productID,
+          );
           if (DE.Platform.shop.onStorePurchase) {
             DE.Platform.shop.onStorePurchase(purchaseResponse, productID);
           }
