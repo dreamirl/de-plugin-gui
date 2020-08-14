@@ -217,9 +217,9 @@ export default class Window extends DE.GameObject {
   }
 
   onHide() {
-    console.log('hideplop');
+    console.log('hide');
     this.interactive = false
-    this.fadeOut(500, true, () => {this.enable = false;} );
+    this.fadeOut(100, true, () => {this.enable = false;} );
   }
 
   show() {
