@@ -169,42 +169,41 @@ ScrollContainer.prototype.scroll = function(x, y) {
   this.limitScroll();
 };
 
-ScrollContainer.prototype.limitScroll = function() {
+ScrollContainer.prototype.updateViewLimit = function() {
   this.contentBounds = this.targetContainer.getBounds();
 
   this.viewLimit = {
-    width: Math.min(this.contentBounds.width, this.hitArea.width),
-    height: Math.min(this.contentBounds.height, this.hitArea.height),
+    width: Math.min(this.contentBounds.width - this.hitArea.width, this.hitArea.width),
+    height: Math.min(this.contentBounds.height - this.hitArea.height, this.hitArea.height),
   };
+
+  if (this.viewLimit.width <= 0) {
+    this.viewLimit.width = 10;
+  }
+  if (this.viewLimit.height <= 0) {
+    this.viewLimit.height = 10;
+  }
+};
+
+ScrollContainer.prototype.limitScroll = function() {
+  this.updateViewLimit();
 
   if (this.scrollX) {
     if (this.targetContainer.x > 0) {
-      this.targetContainer.x += -this.targetContainer.x * 0.1;
+      this.targetContainer.x = 0;
     } else if (
-      this.targetContainer.x <
-      this.viewLimit.width - this.contentBounds.width - 45
+      this.targetContainer.x < -this.viewLimit.width
     ) {
-      this.targetContainer.x +=
-        (this.viewLimit.width -
-          this.contentBounds.width -
-          45 -
-          this.targetContainer.x) *
-        0.1;
+      this.targetContainer.x = -this.viewLimit.width;
     }
   }
   if (this.scrollY) {
     if (this.targetContainer.y > 0) {
-      this.targetContainer.y += -this.targetContainer.y * 0.1;
+      this.targetContainer.y = 0;
     } else if (
-      this.targetContainer.y <
-      this.viewLimit.height - this.contentBounds.height - 45
+      this.targetContainer.y < -this.viewLimit.height
     ) {
-      this.targetContainer.y +=
-        (this.viewLimit.height -
-          this.contentBounds.height -
-          45 -
-          this.targetContainer.y) *
-        0.1;
+      this.targetContainer.y = -this.viewLimit.height;
     }
   }
 };
@@ -233,24 +232,17 @@ ScrollContainer.prototype.setTarget = function(targetContainer) {
 
 ScrollContainer.prototype.updateInertia = function() {
   if (!this.locked && this.inertia && this.targetContainer) {
-    this.contentBounds = this.targetContainer.getBounds();
-
-    this.viewLimit = {
-      width: Math.min(this.contentBounds.width, this.hitArea.width),
-      height: Math.min(this.contentBounds.height, this.hitArea.height),
-    };
+    this.updateViewLimit();
 
     if (
       this.targetContainer.x > 0 ||
-      this.targetContainer.x <
-        this.viewLimit.width - this.contentBounds.width - 10
+      this.targetContainer.x < -this.viewLimit.width
     ) {
       this.inertia.x *= 0.75;
     }
     if (
       this.targetContainer.y > 0 ||
-      this.targetContainer.y <
-        this.viewLimit.height - this.contentBounds.height - 10
+      this.targetContainer.y < -this.viewLimit.height
     ) {
       this.inertia.y *= 0.75;
     }
