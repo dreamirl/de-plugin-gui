@@ -26,6 +26,8 @@ export default class Window extends DE.GameObject {
       ),
     );
 
+    this.noFade = params.noFade;
+
     var self = this;
 
     if (!params.content) {
@@ -219,7 +221,8 @@ export default class Window extends DE.GameObject {
   onHide() {
     console.log('hide');
     this.interactive = false
-    this.fadeOut(100, true, () => {this.enable = false;} );
+    if (!this.noFade) this.fadeOut(100, true, () => {this.enable = false;} );
+    else this.enable = false;
   }
 
   show() {
@@ -230,7 +233,8 @@ export default class Window extends DE.GameObject {
 
   onShow() {
     this.interactive = true;
-    this.fadeIn(500, true);
+    if (!this.noFade) this.fadeIn(500, true);
+    else this.enable = true;
   }
 
   toggle(value) {
