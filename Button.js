@@ -49,17 +49,32 @@ export default class Button extends DE.GameObject {
       );
     }
 
-    var spriteRd = new DE.SpriteRenderer(buttonParams.spriteRenderer);
-    spriteRd.zindex = 1;
-    var textRd;
-    var renderers = [spriteRd];
+    var renderers = [];
+    if (buttonParams.spriteRenderer) {
+      var spriteRd = new DE.SpriteRenderer(buttonParams.spriteRenderer);
+      spriteRd.zindex = 1;
+      renderers.push(spriteRd);
+      this.spriteRenderer = spriteRd;
+    }
+
+    if (buttonParams.textureRenderer) {
+      var textureRd = new DE.TextureRenderer({
+        textureName: buttonParams.textureRenderer.states[0],
+      });
+      this.textureRendererStates = buttonParams.textureRenderer.states;
+      renderers.push(textureRd);
+      this.textureRenderer = textureRd;
+    }
+  
     if (buttonParams.textRenderer || buttonParams.text) {
+      var textRd;
       textRd = new DE.TextRenderer(
         buttonParams.text,
         buttonParams.textRenderer,
       );
       textRd.zindex = 2;
       renderers.push(textRd);
+      this.textRenderer = textRd;
     }
 
     super(
@@ -73,8 +88,6 @@ export default class Button extends DE.GameObject {
 
     this.direction = buttonParams.direction || 'horizontal';
     this.locked = buttonParams.locked || false;
-    this.spriteRenderer = spriteRd;
-    this.textRenderer = textRd;
 
     this.customonMouseClick = function() {};
     this.customonMouseEnter = function() {};
@@ -185,8 +198,8 @@ Button.prototype.changeState = function(event, type) {
     default:
       dir = 0;
   }
-  if (this.direction == 'horizontal') {
-    if (this.spriteRenderer) {
+  if (this.spriteRenderer) {
+    if (this.direction == 'horizontal') {
       if (this.spriteRenderer.totalFrame === 1) {
         if (!this.disableAlpha) {
           this.spriteRenderer.alpha = 0.8 + 0.1 * dir;
@@ -194,9 +207,7 @@ Button.prototype.changeState = function(event, type) {
       } else {
         this.spriteRenderer.setFrame(this.spriteRenderer.startFrame + dir);
       }
-    }
-  } else {
-    if (this.spriteRenderer) {
+    } else {
       if (this.spriteRenderer.totalLine === 1) {
         if (!this.disableAlpha) {
           this.spriteRenderer.alpha = 0.8 + 0.1 * dir;
@@ -205,5 +216,10 @@ Button.prototype.changeState = function(event, type) {
         this.spriteRenderer.setLine(this.spriteRenderer.startLine + dir);
       }
     }
+  }
+  
+  if (this.textureRenderer) {
+    // TODO
+    // this.textureRenderer.changeTexture(this.textureRendererStates[dir]);
   }
 };
