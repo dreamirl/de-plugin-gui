@@ -50,31 +50,29 @@ export default class Button extends DE.GameObject {
     }
 
     var renderers = [];
+    var spriteRd;
+    var textureRd;
+    var textRd;
+
     if (buttonParams.spriteRenderer) {
-      var spriteRd = new DE.SpriteRenderer(buttonParams.spriteRenderer);
+      spriteRd = new DE.SpriteRenderer(buttonParams.spriteRenderer);
       spriteRd.zindex = 1;
       renderers.push(spriteRd);
-      this.spriteRenderer = spriteRd;
     }
-
     if (buttonParams.textureRenderer) {
-      var textureRd = new DE.TextureRenderer({
+      textureRd = new DE.TextureRenderer({
         textureName: buttonParams.textureRenderer.states[0],
       });
-      this.textureRendererStates = buttonParams.textureRenderer.states;
       renderers.push(textureRd);
-      this.textureRenderer = textureRd;
     }
-  
+
     if (buttonParams.textRenderer || buttonParams.text) {
-      var textRd;
       textRd = new DE.TextRenderer(
         buttonParams.text,
         buttonParams.textRenderer,
       );
       textRd.zindex = 2;
       renderers.push(textRd);
-      this.textRenderer = textRd;
     }
 
     super(
@@ -88,6 +86,15 @@ export default class Button extends DE.GameObject {
 
     this.direction = buttonParams.direction || 'horizontal';
     this.locked = buttonParams.locked || false;
+
+    if (spriteRd) {
+      this.spriteRenderer = spriteRd;
+    }
+    if (textureRd) {
+      this.textureRenderer = textureRd;
+      this.textureRendererStates = buttonParams.textureRenderer.states;
+    }
+    if (textRd) this.textRenderer = textRd || '';
 
     this.customonMouseClick = function() {};
     this.customonMouseEnter = function() {};
@@ -217,7 +224,7 @@ Button.prototype.changeState = function(event, type) {
       }
     }
   }
-  
+
   if (this.textureRenderer) {
     // TODO
     // this.textureRenderer.changeTexture(this.textureRendererStates[dir]);
