@@ -131,18 +131,17 @@ export default class Window extends DE.GameObject {
           y: -height / 2,
         });
     }
-    this.add(
-      new DE.GameObject({
-        zindex: -1,
-        interactive: true,
-        hitarea: new DE.PIXI.Rectangle(0, 0, width, height),
-        renderer: frameRenderer,
-        pointerup: (e) => {
-          // prevent click propagating behind the frame
-          e.stopPropagation();
-        },
-      }),
-    );
+    this.frame = new DE.GameObject({
+      zindex: -1,
+      interactive: true,
+      hitarea: new DE.PIXI.Rectangle(0, 0, width, height),
+      renderer: frameRenderer,
+      pointerup: (e) => {
+        // prevent click propagating behind the frame
+        e.stopPropagation();
+      },
+    });
+    this.add(this.frame);
 
     params.header = Object.assign({}, params.header);
     this.header = new DE.GameObject({
@@ -220,8 +219,11 @@ export default class Window extends DE.GameObject {
 
   onHide() {
     console.log('hide');
-    this.interactive = false
-    if (!this.noFade) this.fadeOut(100, true, () => {this.enable = false;} );
+    this.interactive = false;
+    if (!this.noFade)
+      this.fadeOut(100, true, () => {
+        this.enable = false;
+      });
     else this.enable = false;
   }
 
