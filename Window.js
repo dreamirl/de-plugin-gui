@@ -240,7 +240,7 @@ export default class Window extends DE.GameObject {
   }
 
   toggle(value) {
-    if (!!value || this.enable === false) {
+    if (value || (value == undefined && !this.enable)) {
       this.show();
     } else {
       this.hide();
