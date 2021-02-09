@@ -60,9 +60,7 @@ export default class Button extends DE.GameObject {
       renderers.push(spriteRd);
     }
     if (buttonParams.textureRenderer) {
-      textureRd = new DE.TextureRenderer({
-        textureName: buttonParams.textureRenderer.states[0],
-      });
+      textureRd = new DE.TextureRenderer(buttonParams.textureRenderer);
       renderers.push(textureRd);
     }
 
