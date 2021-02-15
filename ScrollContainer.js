@@ -150,7 +150,8 @@ export default class ScrollContainer extends DE.GameObject {
         this.scroll(0, this.mouseScrollSpeed * -event.deltaY);
       }
     };
-    window.addEventListener('wheel', (ev) => this.onscroll(ev));
+    if (!scrollContainerParams.preventWheel) 
+      window.addEventListener('wheel', (ev) => this.onscroll(ev));
 
     this.pointerup = (event) => {
       this.cleanTouch();
@@ -175,7 +176,6 @@ ScrollContainer.prototype.scroll = function(x, y) {
 
 ScrollContainer.prototype.updateViewLimit = function() {
   this.contentBounds = this.targetContainer.getBounds();
-
   this.viewLimit = {
     width: this.contentWidth
       ? this.contentWidth - this.hitArea.width
@@ -197,6 +197,11 @@ ScrollContainer.prototype.updateViewLimit = function() {
   if (this.viewLimit.height <= 0) {
     this.viewLimit.height = this.scrollSpacing;
   }
+};
+
+ScrollContainer.prototype.updateContentSize = function(newSize) {
+  if (newSize.width) this.contentWidth = newSize.width;
+  if (newSize.height) this.contentHeight = newSize.height;
 };
 
 ScrollContainer.prototype.limitScroll = function() {
