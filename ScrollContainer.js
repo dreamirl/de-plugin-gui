@@ -49,6 +49,10 @@ export default class ScrollContainer extends DE.GameObject {
     this.scrollX = scrollContainerParams.scrollX;
     this.scrollY = scrollContainerParams.scrollY;
 
+    this.contentWidth = scrollContainerParams.contentWidth;
+    this.contentHeight = scrollContainerParams.contentHeight;
+    this.scrollSpacing = scrollContainerParams.scrollSpacing ?? 10;
+
     this.containerMask = new DE.GameObject({
       renderer: new DE.GraphicRenderer([
         { beginFill: '0xffffff' },
@@ -173,15 +177,25 @@ ScrollContainer.prototype.updateViewLimit = function() {
   this.contentBounds = this.targetContainer.getBounds();
 
   this.viewLimit = {
-    width: Math.min(this.contentBounds.width - this.hitArea.width, this.hitArea.width),
-    height: Math.min(this.contentBounds.height - this.hitArea.height, this.hitArea.height),
+    width: this.contentWidth
+      ? this.contentWidth - this.hitArea.width
+      : Math.min(
+          this.contentBounds.width - this.hitArea.width,
+          this.hitArea.width,
+        ),
+    height: this.contentHeight
+      ? this.contentHeight - this.hitArea.height
+      : Math.min(
+          this.contentBounds.height - this.hitArea.height,
+          this.hitArea.height,
+        ),
   };
 
   if (this.viewLimit.width <= 0) {
-    this.viewLimit.width = 10;
+    this.viewLimit.width = this.scrollSpacing;
   }
   if (this.viewLimit.height <= 0) {
-    this.viewLimit.height = 10;
+    this.viewLimit.height = this.scrollSpacing;
   }
 };
 
@@ -191,18 +205,14 @@ ScrollContainer.prototype.limitScroll = function() {
   if (this.scrollX) {
     if (this.targetContainer.x > 0) {
       this.targetContainer.x = 0;
-    } else if (
-      this.targetContainer.x < -this.viewLimit.width
-    ) {
+    } else if (this.targetContainer.x < -this.viewLimit.width) {
       this.targetContainer.x = -this.viewLimit.width;
     }
   }
   if (this.scrollY) {
     if (this.targetContainer.y > 0) {
       this.targetContainer.y = 0;
-    } else if (
-      this.targetContainer.y < -this.viewLimit.height
-    ) {
+    } else if (this.targetContainer.y < -this.viewLimit.height) {
       this.targetContainer.y = -this.viewLimit.height;
     }
   }
