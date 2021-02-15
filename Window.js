@@ -171,11 +171,7 @@ export default class Window extends DE.GameObject {
         {
           width: params.content.width || width - params.content.x,
           height: params.content.height || height - params.content.y,
-          scrollX: params.content.scrollX,
-          scrollY: params.content.scrollY,
-          contentWidth: params.content.contentWidth,
-          contentHeight: params.content.contentHeight,
-          scrollSpacing: params.content.scrollSpacing,
+          ...params.content,
         },
         this.content,
       );
