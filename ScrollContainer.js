@@ -150,7 +150,7 @@ export default class ScrollContainer extends DE.GameObject {
         this.scroll(0, this.mouseScrollSpeed * -event.deltaY);
       }
     };
-    if (!scrollContainerParams.preventWheel) 
+    if (!scrollContainerParams.preventWheel)
       window.addEventListener('wheel', (ev) => this.onscroll(ev));
 
     this.pointerup = (event) => {
@@ -168,8 +168,15 @@ ScrollContainer.prototype.resetScroll = function() {
 };
 
 ScrollContainer.prototype.scroll = function(x, y) {
-  if (this.scrollX) this.targetContainer.x += x;
-  if (this.scrollY) this.targetContainer.y += y;
+  if (this.scrollX && x) this.targetContainer.x += x;
+  if (this.scrollY && y) this.targetContainer.y += y;
+
+  this.limitScroll();
+};
+
+ScrollContainer.prototype.scrollTo = function(x, y) {
+  if (this.scrollX && x) this.targetContainer.x = x;
+  if (this.scrollY && y) this.targetContainer.y = y;
 
   this.limitScroll();
 };
