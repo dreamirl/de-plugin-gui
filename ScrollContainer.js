@@ -89,6 +89,7 @@ export default class ScrollContainer extends DE.GameObject {
     };
 
     this.pointermove = (event) => {
+      this.pointerInside = true;
       this.lastMoveTime = new Date();
       if (!this.locked && this.lastPoint) {
         this.lastDist = {
@@ -113,6 +114,10 @@ export default class ScrollContainer extends DE.GameObject {
         }
       }
     };
+
+    this.pointerout = (event) => {
+      this.pointerInside = false;
+    }
 
     this.cleanTouch = (event) => {
       if (
@@ -146,7 +151,7 @@ export default class ScrollContainer extends DE.GameObject {
     };
 
     this.onscroll = function(event) {
-      if (!this.locked) {
+      if (!this.locked && this.pointerInside) {
         this.scroll(0, this.mouseScrollSpeed * -event.deltaY);
       }
     };
