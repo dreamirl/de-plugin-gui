@@ -51,7 +51,7 @@ export default class ScrollContainer extends DE.GameObject {
 
     this.contentWidth = scrollContainerParams.contentWidth;
     this.contentHeight = scrollContainerParams.contentHeight;
-    this.scrollSpacing = scrollContainerParams.scrollSpacing ?? 10;
+    this.scrollSpacing = scrollContainerParams.scrollSpacing || 0;
 
     this.containerMask = new DE.GameObject({
       renderer: new DE.GraphicRenderer([
