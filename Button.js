@@ -114,7 +114,12 @@ export default class Button extends DE.GameObject {
     this.pointerupoutside = this.onMouseUpOutside;
 
     if (buttonParams.icon) {
-      var icon = new DE.SpriteRenderer(buttonParams.icon);
+      var icon;
+      if (buttonParams.icon.spriteName) {
+        icon = new DE.SpriteRenderer(buttonParams.icon);
+      } else if (buttonParams.icon.textureName) {
+        icon = new DE.TextureRenderer(buttonParams.icon);
+      }
       icon.zindex = 3;
       this.addRenderer(icon);
       let textWidth = DE.PIXI.TextMetrics.measureText(textRd.text, textRd.style)
