@@ -224,7 +224,6 @@ Button.prototype.changeState = function(event, type) {
   }
 
   if (this.textureRenderer) {
-    // TODO
-    // this.textureRenderer.changeTexture(this.textureRendererStates[dir]);
+    this.textureRenderer.changeTexture(this.textureRendererStates[dir]);
   }
 };
