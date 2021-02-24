@@ -124,7 +124,27 @@ export default class Button extends DE.GameObject {
       this.addRenderer(icon);
       let textWidth = DE.PIXI.TextMetrics.measureText(textRd.text, textRd.style)
         .width;
-      icon.x = (textWidth / 2 + (icon.margin || icon.width / 2)) >> 0;
+      if (icon.marginRight) {
+        icon.x = (this.width / 2 - (icon.width / 2 + icon.marginRight)) >> 0;
+        if (textRd && textRd.x == 0) {
+          textRd.anchor.x = 1;
+          textRd.x =
+            this.width / 2 -
+            (icon.width + icon.marginLeft + (icon.margin || icon.marginRight));
+        }
+      } else if (icon.marginLeft) {
+        icon.x = (-this.width / 2 + (icon.width / 2 + icon.marginLeft)) >> 0;
+        if (textRd && textRd.x == 0) {
+          textRd.anchor.x = 0;
+          textRd.x =
+            -this.width / 2 +
+            icon.width +
+            icon.marginLeft +
+            (icon.margin || icon.marginLeft);
+        }
+      } else {
+        icon.x = (textWidth / 2 + (icon.margin || icon.width / 2)) >> 0;
+      }
     }
   }
 }
