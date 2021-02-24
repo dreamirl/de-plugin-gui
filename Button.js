@@ -130,7 +130,7 @@ export default class Button extends DE.GameObject {
           textRd.anchor.x = 1;
           textRd.x =
             this.width / 2 -
-            (icon.width + icon.marginLeft + (icon.margin || icon.marginRight));
+            (icon.width + icon.marginRight + (icon.margin || icon.marginRight));
         }
       } else if (icon.marginLeft) {
         icon.x = (-this.width / 2 + (icon.width / 2 + icon.marginLeft)) >> 0;
