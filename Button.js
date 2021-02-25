@@ -52,16 +52,73 @@ export default class Button extends DE.GameObject {
     var renderers = [];
     var spriteRd;
     var textureRd;
+    var animRd;
     var textRd;
+    var advStates = {};
 
-    if (buttonParams.spriteRenderer) {
-      spriteRd = new DE.SpriteRenderer(buttonParams.spriteRenderer);
-      spriteRd.zindex = 1;
-      renderers.push(spriteRd);
+    if (buttonParams.background) {
+      var bgRd;
+      if (buttonParams.background.textureName) {
+        bgRd = new DE.TextureRenderer(buttonParams.background);
+      } else if (buttonParams.background.spriteName) {
+        bgRd = new DE.TextureRenderer(buttonParams.background);
+      } else if (buttonParams.background.frames) {
+        bgRd = new DE.AnimatedTextureRenderer(
+          buttonParams.background.frames,
+          buttonParams.background
+        );
+      }
+      bgRd.zindex = -1;
+      renderers.push(bgRd);
     }
-    if (buttonParams.textureRenderer) {
-      textureRd = new DE.TextureRenderer(buttonParams.textureRenderer);
-      renderers.push(textureRd);
+
+    if (buttonParams.advancedStates) {
+      for (var i in buttonParams.advancedStates) {
+        let st = Object.assign(
+          buttonParams.advancedStates[i],
+          buttonParams.genericRenderersParams || {}
+        );
+        var rd;
+        if (st.frames) {
+          rd = new DE.AnimatedTextureRenderer(st.frames, st);
+          rd.gotoAndPause(0);
+        } else if (st.textureName) {
+          rd = new DE.TextureRenderer(st);
+        } else if (st.spriteName) {
+          rd = new DE.SpriteRenderer(st);
+        }
+        advStates[i] = rd;
+        rd.visible = false;
+        rd.zindex = rd.zindex === undefined ? 1 : rd.zindex;
+        renderers.push(rd);
+      }
+
+    } else {
+      if (buttonParams.spriteRenderer) {
+        spriteRd = new DE.SpriteRenderer(Object.assign(
+          buttonParams.spriteRenderer,
+          buttonParams.genericRenderersParams || {}
+        ));
+        spriteRd.zindex = 1;
+        renderers.push(spriteRd);
+      }
+      if (buttonParams.textureRenderer) {
+        textureRd = new DE.TextureRenderer(Object.assign(
+          buttonParams.textureRenderer,
+          buttonParams.genericRenderersParams || {}
+        ));
+        renderers.push(textureRd);
+      }
+      if (buttonParams.animatedTextureRenderer) {
+        animRd = new DE.AnimatedTextureRenderer(
+          buttonParams.animatedTextureRenderer.frames,
+          Object.assign(
+            buttonParams.animatedTextureRenderer,
+            buttonParams.genericRenderersParams || {}
+          )
+        );
+        renderers.push(animRd);
+      }
     }
 
     if (buttonParams.textRenderer || buttonParams.text) {
@@ -82,17 +139,40 @@ export default class Button extends DE.GameObject {
       }),
     );
 
-    this.direction = buttonParams.direction || 'horizontal';
     this.locked = buttonParams.locked || false;
 
-    if (spriteRd) {
-      this.spriteRenderer = spriteRd;
+    if (buttonParams.advancedStates) {
+      this.isAdvancedButton = true;
+      this.advancedStates = buttonParams.advancedStates;
+      this.statesRenderer = advStates;
+
+      if (buttonParams.stateOnClick &&
+        buttonParams.advancedStates[buttonParams.stateOnClick] &&
+        buttonParams.advancedStates[buttonParams.stateOnClick].frames) {
+        this.statesRenderer[buttonParams.stateOnClick].onAnimEnd = () => {
+          this.statesRenderer[buttonParams.stateOnClick].gotoAndPause(0);
+          this.activeAdvancedState(this.stateOnUp);
+        };
+      }
+      this.activeAdvancedState('idle');
+    } else {
+      if (spriteRd) {
+        this.spriteRenderer = spriteRd;
+      }
+      if (textureRd) {
+        this.textureRenderer = textureRd;
+        this.textureRendererStates = buttonParams.textureRenderer.states;
+      }
+      if (animRd) {
+        this.animatedTextureRenderer = animRd;
+        this.animatedTextureRendererStates = buttonParams.animatedTextureRenderer.states;
+      }
     }
-    if (textureRd) {
-      this.textureRenderer = textureRd;
-      this.textureRendererStates = buttonParams.textureRenderer.states;
+
+    this.direction = buttonParams.direction || 'horizontal';
+    if (textRd) {
+      this.textRenderer = textRd;
     }
-    if (textRd) this.textRenderer = textRd || '';
 
     this.customonMouseClick = function() {};
     this.customonMouseEnter = function() {};
@@ -124,6 +204,7 @@ export default class Button extends DE.GameObject {
       this.addRenderer(icon);
       let textWidth = DE.PIXI.TextMetrics.measureText(textRd.text, textRd.style)
         .width;
+      this.iconRenderer = icon;
       if (icon.marginRight) {
         icon.x = (this.width / 2 - (icon.width / 2 + icon.marginRight)) >> 0;
         if (textRd && textRd.x == 0) {
@@ -149,11 +230,30 @@ export default class Button extends DE.GameObject {
   }
 }
 
+Button.prototype.activeAdvancedState = function(stateName) {
+  if (!this.statesRenderer[stateName]) {
+    return console.error('The state ' + stateName + 'does not exists on the button', this.id || this);
+  }
+
+  for (var i in this.statesRenderer) {
+    this.statesRenderer[i].visible = false;
+  }
+  this.statesRenderer[stateName].pause = false;
+  this.statesRenderer[stateName].visible = true;
+
+  this.onStateChanged(stateName, this.statesRenderer[stateName]);
+};
+Button.prototype.onStateChanged = function() {}
+
 Button.prototype.lock = function(value) {
   this.locked = value === false ? false : true;
   this.cursor = this.locked ? 'null' : 'pointer';
-  this.changeState();
+  this.changeState(null, 'idle');
   this.onLock();
+
+  if (this.isAdvancedButton) {
+    this.activeAdvancedState('locked');
+  }
 };
 Button.prototype.onLock = function() {};
 
@@ -182,7 +282,7 @@ Button.prototype.onMouseUpOutside = function(event) {
   if (this.locked) {
     return;
   }
-  this.changeState(event, this.stateOnUp);
+  this.changeState(event, 'idle');
   this.customonMouseUpOutside(event);
   return true;
 };
@@ -211,12 +311,16 @@ Button.prototype.onMouseLeave = function(event) {
   if (this.locked) {
     return;
   }
-  this.changeState(event, 'null');
+  this.changeState(event, 'idle');
   var e = this.customonMouseLeave(event);
   if (e) return e;
 };
 
 Button.prototype.changeState = function(event, type) {
+  if (this.isAdvancedButton) {
+    this.activeAdvancedState(type);
+    return;
+  }
   var dir = 0;
   switch (type) {
     case 'hover':
