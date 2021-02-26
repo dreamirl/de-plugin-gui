@@ -140,6 +140,10 @@ export default class Button extends DE.GameObject {
     );
 
     this.locked = buttonParams.locked || false;
+    this.direction = buttonParams.direction || 'horizontal';
+    if (textRd) {
+      this.textRenderer = textRd;
+    }
 
     if (buttonParams.advancedStates) {
       this.isAdvancedButton = true;
@@ -154,7 +158,7 @@ export default class Button extends DE.GameObject {
           this.activeAdvancedState(this.stateOnUp);
         };
       }
-      this.activeAdvancedState('idle');
+      this.statesRenderer.idle.visible = true;
     } else {
       if (spriteRd) {
         this.spriteRenderer = spriteRd;
@@ -167,11 +171,6 @@ export default class Button extends DE.GameObject {
         this.animatedTextureRenderer = animRd;
         this.animatedTextureRendererStates = buttonParams.animatedTextureRenderer.states;
       }
-    }
-
-    this.direction = buttonParams.direction || 'horizontal';
-    if (textRd) {
-      this.textRenderer = textRd;
     }
 
     this.customonMouseClick = function() {};
@@ -227,6 +226,10 @@ export default class Button extends DE.GameObject {
         icon.x = (textWidth / 2 + (icon.margin || icon.width / 2)) >> 0;
       }
     }
+
+    if (this.isAdvancedButton) {
+      this.activeAdvancedState('idle');
+    }
   }
 }
 
@@ -251,7 +254,7 @@ Button.prototype.lock = function(value) {
   this.changeState(null, 'idle');
   this.onLock();
 
-  if (this.isAdvancedButton) {
+  if (this.isAdvancedButton && value) {
     this.activeAdvancedState('locked');
   }
 };
