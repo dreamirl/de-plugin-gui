@@ -235,7 +235,7 @@ export default class Button extends DE.GameObject {
 
 Button.prototype.activeAdvancedState = function(stateName) {
   if (!this.statesRenderer[stateName]) {
-    return console.error('The state ' + stateName + 'does not exists on the button', this.id || this);
+    return console.error('The state ' + stateName + ' does not exists on the button', this.id || this);
   }
 
   for (var i in this.statesRenderer) {
@@ -254,7 +254,7 @@ Button.prototype.lock = function(value) {
   this.changeState(null, 'idle');
   this.onLock();
 
-  if (this.isAdvancedButton && value) {
+  if (this.isAdvancedButton && this.locked) {
     this.activeAdvancedState('locked');
   }
 };
