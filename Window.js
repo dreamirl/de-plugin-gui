@@ -225,7 +225,6 @@ export default class Window extends DE.GameObject {
   }
 
   onHide() {
-    console.log('hide');
     this.interactive = false;
     if (!this.noFade)
       this.fadeOut(100, true, () => {
