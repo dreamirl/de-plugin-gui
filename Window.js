@@ -181,30 +181,38 @@ export default class Window extends DE.GameObject {
     }
 
     if (params.button) {
-      params.button.offsetX = params.button.x;
-      params.button.offsetY = params.button.y;
+      if (!params.button.objectParams) {
+        params.button.objectParams = {};
+      }
+      if (params.button.x) {
+        params.button.objectParams.offsetX = params.button.x;
+      }
+      if (params.button.y) {
+        params.button.objectParams.offsetY = params.button.y;
+      }
       delete params.button.x;
       delete params.button.y;
+
       this.closeButton = new Button(
-        {
-          x: width / 2 + (params.button.offsetX || 0),
-          y: -height / 2 + (params.button.offsetY || 0),
+        Object.assign({
+          x: width / 2 + (params.button.objectParams.offsetX || 0),
+          y: -height / 2 + (params.button.objectParams.offsetY || 0),
           zindex: 50,
-        },
-        {
+          ref: self,
+        }, params.button.objectParams),
+        Object.assign({
           spriteRenderer: Object.assign(
             { spriteName: 'close-button' },
-            params.button,
+            params.button.renderer,
           ),
-          collider: Object.assign({ width: 50, height: 50 }, params.button),
-          direction: params.button.direction || 'horizontal',
-          sound: params.button.sound,
-        },
-        {
+          collider: { width: 50, height: 50 },
+          direction: 'horizontal',
+        }, params.button.buttonParams),
+        Object.assign({
           onMouseClick: function() {
             self.hide();
           },
-        },
+        }, params.button.events || {})
       );
       this.add(this.closeButton);
     }
