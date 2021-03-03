@@ -222,7 +222,7 @@ export default class Button extends DE.GameObject {
             icon.marginLeft +
             (icon.margin || icon.marginLeft);
         }
-      } else {
+      } else if (icon.margin !== false) {
         icon.x = (textWidth / 2 + (icon.margin || icon.width / 2)) >> 0;
       }
     }
