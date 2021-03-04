@@ -255,11 +255,11 @@ Button.prototype.lock = function(value) {
   this.locked = value === false ? false : true;
   this.cursor = this.locked ? 'null' : 'pointer';
   this.changeState(null, 'idle');
-  this.onLock();
 
   if (this.isAdvancedButton && this.locked) {
     this.activeAdvancedState('locked');
   }
+  this.onLock();
 };
 Button.prototype.onLock = function() {};
 
