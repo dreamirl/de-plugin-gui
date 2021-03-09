@@ -57,6 +57,10 @@ export default class Button extends DE.GameObject {
     var advStates = {};
 
     if (buttonParams.background) {
+      const bgParams = Object.assign(
+        buttonParams.background,
+        buttonParams.genericRenderersParams || {}
+      );
       var bgRd;
       if (buttonParams.background.textureName) {
         bgRd = new DE.TextureRenderer(buttonParams.background);
@@ -202,31 +206,31 @@ export default class Button extends DE.GameObject {
       icon.zindex = 3;
       this.addRenderer(icon);
       this.iconRenderer = icon;
-
-      if (textRd) {
-        let textWidth = DE.PIXI.TextMetrics.measureText(textRd.text, textRd.style)
-          .width;
-        if (icon.marginRight) {
-          icon.x = (this.width / 2 - (icon.width / 2 + icon.marginRight)) >> 0;
-          if (textRd && textRd.x == 0) {
-            textRd.anchor.x = 1;
-            textRd.x =
-              this.width / 2 -
-              (icon.width + icon.marginRight + (icon.margin || icon.marginRight));
-          }
-        } else if (icon.marginLeft) {
-          icon.x = (-this.width / 2 + (icon.width / 2 + icon.marginLeft)) >> 0;
-          if (textRd && textRd.x == 0) {
-            textRd.anchor.x = 0;
-            textRd.x =
-              -this.width / 2 +
-              icon.width +
-              icon.marginLeft +
-              (icon.margin || icon.marginLeft);
-          }
-        } else if (icon.margin !== false) {
-          icon.x = (textWidth / 2 + (icon.margin || icon.width / 2)) >> 0;
+        
+      if (icon.marginRight) {
+        icon.x = (this.width / 2 - (icon.width / 2 + icon.marginRight)) >> 0;
+        if (textRd && textRd.x == 0) {
+          textRd.anchor.x = 1;
+          textRd.x =
+            this.width / 2 -
+            (icon.width + icon.marginRight + (icon.margin || icon.marginRight));
         }
+      } else if (icon.marginLeft) {
+        icon.x = (-this.width / 2 + (icon.width / 2 + icon.marginLeft)) >> 0;
+        if (textRd && textRd.x == 0) {
+          textRd.anchor.x = 0;
+          textRd.x =
+            -this.width / 2 +
+            icon.width +
+            icon.marginLeft +
+            (icon.margin || icon.marginLeft);
+        }
+      } else if (icon.margin !== false) {
+        if (textRd) {
+          let textWidth = DE.PIXI.TextMetrics.measureText(textRd.text, textRd.style)
+            .width;
+        }
+        icon.x = (textWidth / 2 + (icon.margin || icon.width / 2)) >> 0;
       }
     }
 
