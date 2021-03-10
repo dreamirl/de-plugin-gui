@@ -89,7 +89,6 @@ export default class ScrollContainer extends DE.GameObject {
     };
 
     this.pointermove = (event) => {
-      
       this.lastMoveTime = new Date();
       if (!this.locked && this.lastPoint) {
         this.lastDist = {
@@ -191,6 +190,7 @@ ScrollContainer.prototype.scrollTo = function(x, y) {
 };
 
 ScrollContainer.prototype.updateViewLimit = function() {
+  if (!this.targetContainer) return;
   this.contentBounds = this.targetContainer.getBounds();
   this.viewLimit = {
     width: this.contentWidth
