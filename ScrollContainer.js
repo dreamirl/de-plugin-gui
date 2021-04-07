@@ -78,6 +78,75 @@ export default class ScrollContainer extends DE.GameObject {
 
     this.add(this.touchContainer);
 
+    if (scrollContainerParams.scrollBar) {
+      const self = this;
+      if (this.scrollY) {
+        this.verticalScrollBar = new DE.GameObject({
+          x: this.hitArea.width + 2,
+          renderers: [
+            new DE.NineSliceRenderer(
+              {
+                spriteName: scrollContainerParams.scrollBar.containerSprite,
+                height: this.hitArea.height,
+                width: 4,
+                preventCenter: true,
+              },
+              2, //left
+              2, //top
+              2, //right
+              2, //bottom
+            ),
+            new DE.TextureRenderer({
+              x: 2,
+              textureName: scrollContainerParams.scrollBar.barSprite,
+            }),
+          ],
+          updateScrollBar: function() {
+            this.renderers[1].y =
+              (-(self.targetContainer.y - self.scrollSpacing) *
+                self.hitArea.height) /
+              (self.viewLimit.height + self.scrollSpacing);
+          },
+          automatisms: [['updateScrollBar', 'updateScrollBar']],
+        });
+
+        this.add(this.verticalScrollBar);
+      }
+      if (this.scrollX) {
+        this.horizontalScrollBar = new DE.GameObject({
+          y: this.hitArea.height + 2,
+          renderers: [
+            new DE.NineSliceRenderer(
+              {
+                spriteName: scrollContainerParams.scrollBar.containerSprite,
+                width: this.hitArea.width,
+                height: 4,
+                preventCenter: true,
+              },
+              2, //left
+              2, //top
+              2, //right
+              2, //bottom
+            ),
+            new DE.TextureRenderer({
+              y: 2,
+              rotation: Math.PI / 2,
+              textureName: scrollContainerParams.scrollBar.barSprite,
+            }),
+          ],
+          updateScrollBar: function() {
+            this.renderers[1].x =
+              (-(self.targetContainer.x - self.scrollSpacing) *
+                self.hitArea.width) /
+              (self.viewLimit.width + self.scrollSpacing);
+          },
+          automatisms: [['updateScrollBar', 'updateScrollBar']],
+        });
+
+        this.add(this.horizontalScrollBar);
+      }
+    }
+
     this.pointerdown = (event) => {
       if (!this.locked) {
         this.inertia = { x: 0, y: 0 };
