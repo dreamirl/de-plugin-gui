@@ -80,6 +80,7 @@ export default class ScrollContainer extends DE.GameObject {
 
     if (scrollContainerParams.scrollBar) {
       const self = this;
+      this.updateViewLimit();
       if (this.scrollY) {
         this.verticalScrollBar = new DE.GameObject({
           x: this.hitArea.width + 2,
