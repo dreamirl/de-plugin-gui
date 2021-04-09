@@ -116,11 +116,7 @@ export default class ScrollContainer extends DE.GameObject {
             self.verticalBarBtn.y =
               (-(self.targetContainer.y - self.scrollSpacing) *
                 self.hitArea.height) /
-              (self.viewLimit.height + self.scrollSpacing);
-
-            if (self.verticalBarBtn.mouseDown) {
-              console.log('down');
-            }
+                (self.viewLimit.height + self.scrollSpacing) || 0;
           },
           automatisms: [['updateScrollBar', 'updateScrollBar']],
         });
@@ -157,10 +153,10 @@ export default class ScrollContainer extends DE.GameObject {
             ),
           ],
           updateScrollBar: function() {
-            this.gameObjects[0].x =
+            self.horizontalBarBtn.x =
               (-(self.targetContainer.x - self.scrollSpacing) *
                 self.hitArea.width) /
-              (self.viewLimit.width + self.scrollSpacing);
+                (self.viewLimit.width + self.scrollSpacing) || 0;
           },
           automatisms: [['updateScrollBar', 'updateScrollBar']],
         });
