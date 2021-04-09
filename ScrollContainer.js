@@ -1,4 +1,5 @@
 import DE from '@dreamirl/dreamengine';
+import Button from './Button';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -53,6 +54,8 @@ export default class ScrollContainer extends DE.GameObject {
     this.contentHeight = scrollContainerParams.contentHeight;
     this.scrollSpacing = scrollContainerParams.scrollSpacing || 0;
 
+    this.sceneScale = scrollContainerParams.sceneScale || 1;
+
     this.containerMask = new DE.GameObject({
       renderer: new DE.GraphicRenderer([
         { beginFill: '0xffffff' },
@@ -81,9 +84,20 @@ export default class ScrollContainer extends DE.GameObject {
     if (scrollContainerParams.scrollBar) {
       const self = this;
       this.updateViewLimit();
+
       if (this.scrollY) {
+        this.verticalBarBtn = new Button(
+          { x: 2 },
+          {
+            background: {
+              spriteName: scrollContainerParams.scrollBar.barSprite,
+            },
+          },
+          {},
+        );
+
         this.verticalScrollBar = new DE.GameObject({
-          x: this.hitArea.width + 2,
+          x: this.hitArea.width + (scrollContainerParams.scrollBar.margin || 2),
           renderers: [
             new DE.NineSliceRenderer(
               {
@@ -97,25 +111,37 @@ export default class ScrollContainer extends DE.GameObject {
               2, //right
               2, //bottom
             ),
-            new DE.TextureRenderer({
-              x: 2,
-              textureName: scrollContainerParams.scrollBar.barSprite,
-            }),
           ],
           updateScrollBar: function() {
-            this.renderers[1].y =
+            self.verticalBarBtn.y =
               (-(self.targetContainer.y - self.scrollSpacing) *
                 self.hitArea.height) /
               (self.viewLimit.height + self.scrollSpacing);
+
+            if (self.verticalBarBtn.mouseDown) {
+              console.log('down');
+            }
           },
           automatisms: [['updateScrollBar', 'updateScrollBar']],
         });
 
+        this.verticalScrollBar.add(this.verticalBarBtn);
         this.add(this.verticalScrollBar);
       }
       if (this.scrollX) {
+        this.horizontalBarBtn = new Button(
+          { y: 2, rotation: Math.PI / 2 },
+          {
+            background: {
+              spriteName: scrollContainerParams.scrollBar.barSprite,
+            },
+          },
+          {},
+        );
+
         this.horizontalScrollBar = new DE.GameObject({
-          y: this.hitArea.height + 2,
+          y:
+            this.hitArea.height + (scrollContainerParams.scrollBar.margin || 2),
           renderers: [
             new DE.NineSliceRenderer(
               {
@@ -129,14 +155,9 @@ export default class ScrollContainer extends DE.GameObject {
               2, //right
               2, //bottom
             ),
-            new DE.TextureRenderer({
-              y: 2,
-              rotation: Math.PI / 2,
-              textureName: scrollContainerParams.scrollBar.barSprite,
-            }),
           ],
           updateScrollBar: function() {
-            this.renderers[1].x =
+            this.gameObjects[0].x =
               (-(self.targetContainer.x - self.scrollSpacing) *
                 self.hitArea.width) /
               (self.viewLimit.width + self.scrollSpacing);
@@ -144,6 +165,7 @@ export default class ScrollContainer extends DE.GameObject {
           automatisms: [['updateScrollBar', 'updateScrollBar']],
         });
 
+        this.horizontalScrollBar.add(this.horizontalBarBtn);
         this.add(this.horizontalScrollBar);
       }
     }
@@ -166,7 +188,10 @@ export default class ScrollContainer extends DE.GameObject {
           y: event.data.global.y - this.lastPoint.y,
         };
         this.lastPoint = Object.assign({}, event.data.global);
-        this.scroll(this.lastDist.x, this.lastDist.y);
+        this.scroll(
+          this.lastDist.x / this.sceneScale,
+          this.lastDist.y / this.sceneScale,
+        );
       }
 
       if (!this.locked && this.startPoint && this.lastPoint) {
