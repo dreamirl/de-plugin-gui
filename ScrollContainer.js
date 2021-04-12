@@ -42,13 +42,17 @@ export default class ScrollContainer extends DE.GameObject {
 
     this.mouseScrollSpeed = scrollContainerParams.mouseScrollSpeed || 0.6;
     this.hitArea = new DE.PIXI.Rectangle(
-      0,
-      0,
-      scrollContainerParams.width || 300,
-      scrollContainerParams.height || 300,
+      -10,
+      -10,
+      scrollContainerParams.width + 20 || 300,
+      scrollContainerParams.height + 20 || 300,
     );
     this.scrollX = scrollContainerParams.scrollX;
     this.scrollY = scrollContainerParams.scrollY;
+    this.containerSize = {
+      width: scrollContainerParams.width,
+      height: scrollContainerParams.height,
+    };
 
     this.contentWidth = scrollContainerParams.contentWidth;
     this.contentHeight = scrollContainerParams.contentHeight;
@@ -60,12 +64,7 @@ export default class ScrollContainer extends DE.GameObject {
       renderer: new DE.GraphicRenderer([
         { beginFill: '0xffffff' },
         {
-          drawRect: [
-            this.hitArea.x,
-            this.hitArea.y,
-            this.hitArea.width,
-            this.hitArea.height,
-          ],
+          drawRect: [0, 0, this.containerSize.width, this.containerSize.height],
         },
         { endFill: [] },
       ]),
@@ -93,16 +92,20 @@ export default class ScrollContainer extends DE.GameObject {
               spriteName: scrollContainerParams.scrollBar.barSprite,
             },
           },
-          {},
+          {
+            onMouseClick: () => console.log('click!'),
+          },
         );
 
         this.verticalScrollBar = new DE.GameObject({
-          x: this.hitArea.width + (scrollContainerParams.scrollBar.margin || 2),
+          x:
+            this.containerSize.width +
+            (scrollContainerParams.scrollBar.margin || 2),
           renderers: [
             new DE.NineSliceRenderer(
               {
                 spriteName: scrollContainerParams.scrollBar.containerSprite,
-                height: this.hitArea.height,
+                height: this.containerSize.height,
                 width: 4,
                 preventCenter: true,
               },
@@ -115,7 +118,7 @@ export default class ScrollContainer extends DE.GameObject {
           updateScrollBar: function() {
             self.verticalBarBtn.y =
               (-(self.targetContainer.y - self.scrollSpacing) *
-                self.hitArea.height) /
+                self.containerSize.height) /
                 (self.viewLimit.height + self.scrollSpacing) || 0;
           },
           automatisms: [['updateScrollBar', 'updateScrollBar']],
@@ -137,12 +140,13 @@ export default class ScrollContainer extends DE.GameObject {
 
         this.horizontalScrollBar = new DE.GameObject({
           y:
-            this.hitArea.height + (scrollContainerParams.scrollBar.margin || 2),
+            this.containerSize.height +
+            (scrollContainerParams.scrollBar.margin || 2),
           renderers: [
             new DE.NineSliceRenderer(
               {
                 spriteName: scrollContainerParams.scrollBar.containerSprite,
-                width: this.hitArea.width,
+                width: this.containerSize.width,
                 height: 4,
                 preventCenter: true,
               },
@@ -155,7 +159,7 @@ export default class ScrollContainer extends DE.GameObject {
           updateScrollBar: function() {
             self.horizontalBarBtn.x =
               (-(self.targetContainer.x - self.scrollSpacing) *
-                self.hitArea.width) /
+                self.containerSize.width) /
                 (self.viewLimit.width + self.scrollSpacing) || 0;
           },
           automatisms: [['updateScrollBar', 'updateScrollBar']],
@@ -284,16 +288,16 @@ ScrollContainer.prototype.updateViewLimit = function() {
   this.contentBounds = this.targetContainer.getBounds();
   this.viewLimit = {
     width: this.contentWidth
-      ? this.contentWidth - this.hitArea.width + this.scrollSpacing
+      ? this.contentWidth - this.containerSize.width + this.scrollSpacing
       : Math.min(
-          this.contentBounds.width - this.hitArea.width,
-          this.hitArea.width,
+          this.contentBounds.width - this.containerSize.width,
+          this.containerSize.width,
         ),
     height: this.contentHeight
-      ? this.contentHeight - this.hitArea.height + this.scrollSpacing
+      ? this.contentHeight - this.containerSize.height + this.scrollSpacing
       : Math.min(
-          this.contentBounds.height - this.hitArea.height,
-          this.hitArea.height,
+          this.contentBounds.height - this.containerSize.height,
+          this.containerSize.height,
         ),
   };
 
