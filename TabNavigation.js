@@ -60,7 +60,11 @@ export default class TabNavigation extends DE.GameObject {
 
   navigateTo(target) {
     this.setActiveTab(target);
-    this.currentTab.customonMouseClick();
+    this.currentTab.onMouseUp();
+    this.currentTab.onMouseClick();
+
+    // TODO onMouseLeave if not currentButton after onMouseClick anim
+    setTimeout(() => this.currentTab.onMouseLeave(), 100);
   }
 
   setActiveTab(target) {
