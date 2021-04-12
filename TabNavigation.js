@@ -21,14 +21,12 @@ import Button from './Button';
   },
   [
     {
-      name: 'tab1',
-      text: 'Tab 1',
       onMouseClick: function() { console.log('Clicked on Tab 1') }
+      buttonParams: {},
     },
     {
-      name: 'tab2',
-      text: 'Tab 2',
       onMouseClick: function() { console.log('Clicked on Tab 2') }
+      buttonParams: {},
     }
   ],
   {
@@ -50,6 +48,7 @@ export default class TabNavigation extends DE.GameObject {
     this.tabsByName = {};
     this.tabs = [];
 
+    if (!tabs) return;
     tabs.forEach((tabArgs, i) => {
       let tab = this.createTab(tabArgs, i, buttonParams);
       this.tabsByName[tab.name] = tab;
@@ -93,23 +92,24 @@ export default class TabNavigation extends DE.GameObject {
 
   createTab(tabArgs, i, buttonParams) {
     var self = this;
+    const params = JSON.parse(JSON.stringify(buttonParams));
 
     var xPos =
       this.direction === 'horizontal'
-        ? (buttonParams.width + buttonParams.padding) * i
+        ? (params.width + (params.padding || 0)) * i
         : 0;
     var yPos =
       this.direction === 'vertical'
-        ? (buttonParams.height + buttonParams.padding) * i
+        ? (params.height + (params.padding || 0)) * i
         : 0;
     return new Button(
-      Object.assign(buttonParams.objectParams, {
+      Object.assign(params.objectParams || {}, {
         name: tabArgs.name,
         x: xPos,
         y: yPos,
       }),
-      Object.assign(buttonParams.buttonParams, { text: tabArgs.text }),
-      Object.assign(buttonParams.events, {
+      Object.assign(params.buttonParams || {}, tabArgs.buttonParams),
+      Object.assign(params.events || {}, {
         onMouseClick: function() {
           if (this.container) this.container.deleteAll();
           tabArgs.onMouseClick();
