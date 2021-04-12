@@ -11,37 +11,47 @@ import Button from './Button';
  */
 /**
  * @example
- * var tabs = new TabNavigation({
-  x: 180,
-  y: 200,
-  zindex: 50,
-  items: {
-    padding: 0,
-    width: 120
+* const tabs = new TabNavigation(
+  {
+    x: 180,
+    y: 200,
+    zindex: 50,
+    direction: 'vertical',
+    container: containerGameObject // This is used to auto delete childrens on tab click
   },
-  tabs: [
+  [
     {
-      name: 'tabName',
-      text: 'Text or localisation key',
-      onMouseClick: function() { when clicked, what to do}
+      name: 'tab1',
+      text: 'Tab 1',
+      onMouseClick: function() { console.log('Clicked on Tab 1') }
+    },
+    {
+      name: 'tab2',
+      text: 'Tab 2',
+      onMouseClick: function() { console.log('Clicked on Tab 2') }
     }
-  ]
-});
+  ],
+  {
+    width: 50,
+    height: 100,
+    padding: 7,
+    objectParams: {},
+    buttonParams: {},
+    events: {},
+  }
+  );
 */
 export default class TabNavigation extends DE.GameObject {
-  constructor(params) {
-    super(params);
+  constructor(objectParams, tabs, buttonParams) {
+    super(objectParams);
 
-    this.itemWidth = params.width;
-    this.startX = this.x;
-    this.startY = this.y;
-    this.direction = params.items.direction || 'horizontal';
+    this.direction = objectParams.direction || 'horizontal';
 
     this.tabsByName = {};
     this.tabs = [];
 
-    params.tabs.forEach((tabArgs, i) => {
-      let tab = this.createTab(tabArgs, i);
+    tabs.forEach((tabArgs, i) => {
+      let tab = this.createTab(tabArgs, i, buttonParams);
       this.tabsByName[tab.name] = tab;
       this.tabs.push(tab);
     });
@@ -81,34 +91,31 @@ export default class TabNavigation extends DE.GameObject {
     return this.currentTab || this.tabs[0];
   }
 
-  createTab(tabArgs, i) {
+  createTab(tabArgs, i, buttonParams) {
     var self = this;
 
     var xPos =
       this.direction === 'horizontal'
-        ? (this.items.width + this.items.padding) * i
+        ? (buttonParams.width + buttonParams.padding) * i
         : 0;
     var yPos =
       this.direction === 'vertical'
-        ? (this.items.height + this.items.padding) * i
+        ? (buttonParams.height + buttonParams.padding) * i
         : 0;
     return new Button(
-      {
+      Object.assign(buttonParams.objectParams, {
         name: tabArgs.name,
         x: xPos,
         y: yPos,
-      },
-      Object.assign(cloneObj(this.tabArgs), { text: tabArgs.text }),
-      {
+      }),
+      Object.assign(buttonParams.buttonParams, { text: tabArgs.text }),
+      Object.assign(buttonParams.events, {
         onMouseClick: function() {
+          if (this.container) this.container.deleteAll();
           tabArgs.onMouseClick();
           self.setActiveTab(this);
         },
-      },
+      }),
     );
   }
 }
-
-var cloneObj = function(original) {
-  return JSON.parse(JSON.stringify(original));
-};
