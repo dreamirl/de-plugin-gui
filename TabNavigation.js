@@ -92,30 +92,34 @@ export default class TabNavigation extends DE.GameObject {
 
   createTab(tabArgs, i, buttonParams) {
     var self = this;
-    const params = JSON.parse(JSON.stringify(buttonParams));
-
     var xPos =
       this.direction === 'horizontal'
-        ? (params.width + (params.padding || 0)) * i
+        ? (buttonParams.width + (buttonParams.padding || 0)) * i
         : 0;
     var yPos =
       this.direction === 'vertical'
-        ? (params.height + (params.padding || 0)) * i
+        ? (buttonParams.height + (buttonParams.padding || 0)) * i
         : 0;
     return new Button(
-      Object.assign(params.objectParams || {}, {
-        name: tabArgs.name,
-        x: xPos,
-        y: yPos,
-      }),
-      Object.assign(params.buttonParams || {}, tabArgs.buttonParams),
-      Object.assign(params.events || {}, {
-        onMouseClick: function() {
-          if (this.container) this.container.deleteAll();
-          tabArgs.onMouseClick();
-          self.setActiveTab(this);
+      Object.assign(
+        {
+          name: tabArgs.name,
+          x: xPos,
+          y: yPos,
         },
-      }),
+        buttonParams.objectParams || {},
+      ),
+      Object.assign(tabArgs.buttonParams, buttonParams.buttonParams || {}),
+      Object.assign(
+        {
+          onMouseClick: function() {
+            if (this.container) this.container.deleteAll();
+            tabArgs.onMouseClick();
+            self.setActiveTab(this);
+          },
+        },
+        buttonParams.events || {},
+      ),
     );
   }
 }
