@@ -41,12 +41,6 @@ export default class ScrollContainer extends DE.GameObject {
     if (!scrollContainerParams) scrollContainerParams = {};
 
     this.mouseScrollSpeed = scrollContainerParams.mouseScrollSpeed || 0.6;
-    this.hitArea = new DE.PIXI.Rectangle(
-      -10,
-      -10,
-      scrollContainerParams.width + 20 || 300,
-      scrollContainerParams.height + 20 || 300,
-    );
     this.scrollX = scrollContainerParams.scrollX;
     this.scrollY = scrollContainerParams.scrollY;
     this.containerSize = {
@@ -93,7 +87,15 @@ export default class ScrollContainer extends DE.GameObject {
             },
           },
           {
-            onMouseClick: () => console.log('click!'),
+            onMouseDown: function() {
+              this.parent.mouseDown = true;
+            },
+            onMouseUp: function() {
+              setTimeout(() => (self.verticalScrollBar.mouseDown = false), 10);
+            },
+            onMouseUpOutside: function() {
+              setTimeout(() => (self.verticalScrollBar.mouseDown = false), 10);
+            },
           },
         );
 
@@ -135,7 +137,23 @@ export default class ScrollContainer extends DE.GameObject {
               spriteName: scrollContainerParams.scrollBar.barSprite,
             },
           },
-          {},
+          {
+            onMouseDown: function() {
+              this.parent.mouseDown = true;
+            },
+            onMouseUp: function() {
+              setTimeout(
+                () => (self.horizontalScrollBar.mouseDown = false),
+                10,
+              );
+            },
+            onMouseUpOutside: function() {
+              setTimeout(
+                () => (self.horizontalScrollBar.mouseDown = false),
+                10,
+              );
+            },
+          },
         );
 
         this.horizontalScrollBar = new DE.GameObject({
@@ -188,9 +206,25 @@ export default class ScrollContainer extends DE.GameObject {
           y: event.data.global.y - this.lastPoint.y,
         };
         this.lastPoint = Object.assign({}, event.data.global);
+
+        const scrollBarH =
+          this.horizontalScrollBar && this.horizontalScrollBar.mouseDown;
+        const scrollBarV =
+          this.verticalScrollBar && this.verticalScrollBar.mouseDown;
+
         this.scroll(
-          this.lastDist.x / this.sceneScale,
-          this.lastDist.y / this.sceneScale,
+          (scrollBarH
+            ? -(this.viewLimit.width + this.scrollSpacing) /
+              this.containerSize.width
+            : 1) *
+            (this.lastDist.x / this.sceneScale) *
+            (scrollBarV ? 0 : 1),
+          (scrollBarV
+            ? -(this.viewLimit.height + this.scrollSpacing) /
+              this.containerSize.height
+            : 1) *
+            (this.lastDist.y / this.sceneScale) *
+            (scrollBarH ? 0 : 1),
         );
       }
 
@@ -224,7 +258,14 @@ export default class ScrollContainer extends DE.GameObject {
         this.lastDist &&
         new Date() - this.lastMoveTime < 20
       ) {
-        this.inertia = Object.assign({}, this.lastDist);
+        if (
+          (!this.horizontalScrollBar ||
+            (this.horizontalScrollBar &&
+              !this.horizontalScrollBar.mouseDown)) &&
+          (!this.verticalScrollBar ||
+            (this.verticalScrollBar && !this.verticalScrollBar.mouseDown))
+        )
+          this.inertia = Object.assign({}, this.lastDist);
 
         if (
           this.targetContainer.x > this.scrollSpacing ||
