@@ -1,4 +1,5 @@
 import DE from '@dreamirl/dreamengine';
+import Button from './Button';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -40,29 +41,24 @@ export default class ScrollContainer extends DE.GameObject {
     if (!scrollContainerParams) scrollContainerParams = {};
 
     this.mouseScrollSpeed = scrollContainerParams.mouseScrollSpeed || 0.6;
-    this.hitArea = new DE.PIXI.Rectangle(
-      0,
-      0,
-      scrollContainerParams.width || 300,
-      scrollContainerParams.height || 300,
-    );
     this.scrollX = scrollContainerParams.scrollX;
     this.scrollY = scrollContainerParams.scrollY;
+    this.containerSize = {
+      width: scrollContainerParams.width,
+      height: scrollContainerParams.height,
+    };
 
     this.contentWidth = scrollContainerParams.contentWidth;
     this.contentHeight = scrollContainerParams.contentHeight;
     this.scrollSpacing = scrollContainerParams.scrollSpacing || 0;
 
+    this.sceneScale = scrollContainerParams.sceneScale || 1;
+
     this.containerMask = new DE.GameObject({
       renderer: new DE.GraphicRenderer([
         { beginFill: '0xffffff' },
         {
-          drawRect: [
-            this.hitArea.x,
-            this.hitArea.y,
-            this.hitArea.width,
-            this.hitArea.height,
-          ],
+          drawRect: [0, 0, this.containerSize.width, this.containerSize.height],
         },
         { endFill: [] },
       ]),
@@ -81,14 +77,37 @@ export default class ScrollContainer extends DE.GameObject {
     if (scrollContainerParams.scrollBar) {
       const self = this;
       this.updateViewLimit();
+
       if (this.scrollY) {
+        this.verticalBarBtn = new Button(
+          { x: 2 },
+          {
+            background: {
+              spriteName: scrollContainerParams.scrollBar.barSprite,
+            },
+          },
+          {
+            onMouseDown: function() {
+              this.parent.mouseDown = true;
+            },
+            onMouseUp: function() {
+              setTimeout(() => (self.verticalScrollBar.mouseDown = false), 10);
+            },
+            onMouseUpOutside: function() {
+              setTimeout(() => (self.verticalScrollBar.mouseDown = false), 10);
+            },
+          },
+        );
+
         this.verticalScrollBar = new DE.GameObject({
-          x: this.hitArea.width + 2,
+          x:
+            this.containerSize.width +
+            (scrollContainerParams.scrollBar.margin || 2),
           renderers: [
             new DE.NineSliceRenderer(
               {
                 spriteName: scrollContainerParams.scrollBar.containerSprite,
-                height: this.hitArea.height,
+                height: this.containerSize.height,
                 width: 4,
                 preventCenter: true,
               },
@@ -97,30 +116,55 @@ export default class ScrollContainer extends DE.GameObject {
               2, //right
               2, //bottom
             ),
-            new DE.TextureRenderer({
-              x: 2,
-              textureName: scrollContainerParams.scrollBar.barSprite,
-            }),
           ],
           updateScrollBar: function() {
-            this.renderers[1].y =
+            self.verticalBarBtn.y =
               (-(self.targetContainer.y - self.scrollSpacing) *
-                self.hitArea.height) /
-              (self.viewLimit.height + self.scrollSpacing);
+                self.containerSize.height) /
+                (self.viewLimit.height + self.scrollSpacing) || 0;
           },
           automatisms: [['updateScrollBar', 'updateScrollBar']],
         });
 
+        this.verticalScrollBar.add(this.verticalBarBtn);
         this.add(this.verticalScrollBar);
       }
       if (this.scrollX) {
+        this.horizontalBarBtn = new Button(
+          { y: 2, rotation: Math.PI / 2 },
+          {
+            background: {
+              spriteName: scrollContainerParams.scrollBar.barSprite,
+            },
+          },
+          {
+            onMouseDown: function() {
+              this.parent.mouseDown = true;
+            },
+            onMouseUp: function() {
+              setTimeout(
+                () => (self.horizontalScrollBar.mouseDown = false),
+                10,
+              );
+            },
+            onMouseUpOutside: function() {
+              setTimeout(
+                () => (self.horizontalScrollBar.mouseDown = false),
+                10,
+              );
+            },
+          },
+        );
+
         this.horizontalScrollBar = new DE.GameObject({
-          y: this.hitArea.height + 2,
+          y:
+            this.containerSize.height +
+            (scrollContainerParams.scrollBar.margin || 2),
           renderers: [
             new DE.NineSliceRenderer(
               {
                 spriteName: scrollContainerParams.scrollBar.containerSprite,
-                width: this.hitArea.width,
+                width: this.containerSize.width,
                 height: 4,
                 preventCenter: true,
               },
@@ -129,21 +173,17 @@ export default class ScrollContainer extends DE.GameObject {
               2, //right
               2, //bottom
             ),
-            new DE.TextureRenderer({
-              y: 2,
-              rotation: Math.PI / 2,
-              textureName: scrollContainerParams.scrollBar.barSprite,
-            }),
           ],
           updateScrollBar: function() {
-            this.renderers[1].x =
+            self.horizontalBarBtn.x =
               (-(self.targetContainer.x - self.scrollSpacing) *
-                self.hitArea.width) /
-              (self.viewLimit.width + self.scrollSpacing);
+                self.containerSize.width) /
+                (self.viewLimit.width + self.scrollSpacing) || 0;
           },
           automatisms: [['updateScrollBar', 'updateScrollBar']],
         });
 
+        this.horizontalScrollBar.add(this.horizontalBarBtn);
         this.add(this.horizontalScrollBar);
       }
     }
@@ -166,7 +206,26 @@ export default class ScrollContainer extends DE.GameObject {
           y: event.data.global.y - this.lastPoint.y,
         };
         this.lastPoint = Object.assign({}, event.data.global);
-        this.scroll(this.lastDist.x, this.lastDist.y);
+
+        const scrollBarH =
+          this.horizontalScrollBar && this.horizontalScrollBar.mouseDown;
+        const scrollBarV =
+          this.verticalScrollBar && this.verticalScrollBar.mouseDown;
+
+        this.scroll(
+          (scrollBarH
+            ? -(this.viewLimit.width + this.scrollSpacing) /
+              this.containerSize.width
+            : 1) *
+            (this.lastDist.x / this.sceneScale) *
+            (scrollBarV ? 0 : 1),
+          (scrollBarV
+            ? -(this.viewLimit.height + this.scrollSpacing) /
+              this.containerSize.height
+            : 1) *
+            (this.lastDist.y / this.sceneScale) *
+            (scrollBarH ? 0 : 1),
+        );
       }
 
       if (!this.locked && this.startPoint && this.lastPoint) {
@@ -199,7 +258,14 @@ export default class ScrollContainer extends DE.GameObject {
         this.lastDist &&
         new Date() - this.lastMoveTime < 20
       ) {
-        this.inertia = Object.assign({}, this.lastDist);
+        if (
+          (!this.horizontalScrollBar ||
+            (this.horizontalScrollBar &&
+              !this.horizontalScrollBar.mouseDown)) &&
+          (!this.verticalScrollBar ||
+            (this.verticalScrollBar && !this.verticalScrollBar.mouseDown))
+        )
+          this.inertia = Object.assign({}, this.lastDist);
 
         if (
           this.targetContainer.x > this.scrollSpacing ||
@@ -263,16 +329,16 @@ ScrollContainer.prototype.updateViewLimit = function() {
   this.contentBounds = this.targetContainer.getBounds();
   this.viewLimit = {
     width: this.contentWidth
-      ? this.contentWidth - this.hitArea.width + this.scrollSpacing
+      ? this.contentWidth - this.containerSize.width + this.scrollSpacing
       : Math.min(
-          this.contentBounds.width - this.hitArea.width,
-          this.hitArea.width,
+          this.contentBounds.width - this.containerSize.width,
+          this.containerSize.width,
         ),
     height: this.contentHeight
-      ? this.contentHeight - this.hitArea.height + this.scrollSpacing
+      ? this.contentHeight - this.containerSize.height + this.scrollSpacing
       : Math.min(
-          this.contentBounds.height - this.hitArea.height,
-          this.hitArea.height,
+          this.contentBounds.height - this.containerSize.height,
+          this.containerSize.height,
         ),
   };
 
