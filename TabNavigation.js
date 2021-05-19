@@ -56,22 +56,29 @@ export default class TabNavigation extends DE.GameObject {
     });
 
     this.add(this.tabs);
+
+    this.currentTab = this.tabs[0];
+    this.currentTabIndex = 0;
   }
 
-  navigateTo(target) {
-    this.setActiveTab(target);
-    this.currentTab.onMouseUp();
-    this.currentTab.onMouseClick();
-
-    // TODO onMouseLeave if not currentButton after onMouseClick anim
-    setTimeout(() => this.currentTab.onMouseLeave(), 100);
+  navigateTo(index) {
+    this.tabs[index].onMouseClick();
   }
 
-  setActiveTab(target) {
+  reload() {
+    this.tabs[this.currentTabIndex].onMouseClick();
+  }
+
+  setActiveTab(index) {
+    const target = this.tabs[index];
+    if (!target)
+      return console.error('Tab number', index, 'do not exist in', this.tabs);
+
     this.tabs.forEach((tab) => {
       tab.renderer.currentLine = 0;
     });
 
+    this.currentTabIndex = index;
     if (target.__proto__ && target.__proto__.DEName) {
       target.renderer.currentLine = 1;
       this.currentTab = target;
@@ -90,26 +97,23 @@ export default class TabNavigation extends DE.GameObject {
     }
   }
 
-  getCurrentTab() {
-    return this.currentTab || this.tabs[0];
-  }
-
   createTab(tabArgs, i, buttonParams) {
-    var self = this;
-    var xPos =
+    const self = this;
+    const xPos =
       this.direction === 'horizontal'
         ? (buttonParams.width + (buttonParams.padding || 0)) * i
         : 0;
-    var yPos =
+    const yPos =
       this.direction === 'vertical'
         ? (buttonParams.height + (buttonParams.padding || 0)) * i
         : 0;
-    return new Button(
+    const button = new Button(
       Object.assign(
         {
           name: tabArgs.name,
           x: xPos,
           y: yPos,
+          id: 'tab-' + i,
         },
         buttonParams.objectParams || {},
       ),
@@ -117,13 +121,24 @@ export default class TabNavigation extends DE.GameObject {
       Object.assign(
         {
           onMouseClick: function() {
-            if (this.container) this.container.deleteAll();
+            if (self.container) self.container.deleteAll();
+            const oldCurrentTab = self.currentTab;
+            self.setActiveTab(i);
+            oldCurrentTab.onMouseLeave();
+            self.currentTab.onMouseUp();
             tabArgs.onMouseClick();
-            self.setActiveTab(this);
           },
         },
         buttonParams.events || {},
       ),
     );
+
+    button.initOnMouseLeave = button.onMouseLeave;
+    button.onMouseLeave = () => {
+      if (self.currentTabIndex === i) return;
+      button.initOnMouseLeave();
+    };
+
+    return button;
   }
 }
