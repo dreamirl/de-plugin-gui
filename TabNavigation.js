@@ -62,6 +62,7 @@ export default class TabNavigation extends DE.GameObject {
   }
 
   navigateTo(index) {
+    this.tabs[index].lock(false);
     this.tabs[index].onMouseClick();
   }
 
@@ -122,23 +123,17 @@ export default class TabNavigation extends DE.GameObject {
         {
           onMouseClick: function() {
             if (self.container) self.container.deleteAll();
-            const oldCurrentTab = self.currentTab;
+            self.currentTab.lock(false);
+            self.currentTab.onMouseLeave();
             self.setActiveTab(i);
-            oldCurrentTab.onMouseLeave();
             self.currentTab.onMouseUp();
+            self.currentTab.lock(true);
             tabArgs.onMouseClick();
           },
         },
         buttonParams.events || {},
       ),
     );
-
-    button.initOnMouseLeave = button.onMouseLeave;
-    button.onMouseLeave = () => {
-      if (self.currentTabIndex === i) return;
-      button.initOnMouseLeave();
-    };
-
     return button;
   }
 }
