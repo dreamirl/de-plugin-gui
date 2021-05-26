@@ -194,25 +194,34 @@ export default class Window extends DE.GameObject {
       delete params.button.y;
 
       this.closeButton = new Button(
-        Object.assign({
-          x: width / 2 + (params.button.objectParams.offsetX || 0),
-          y: -height / 2 + (params.button.objectParams.offsetY || 0),
-          zindex: 50,
-          ref: self,
-        }, params.button.objectParams),
-        Object.assign({
-          spriteRenderer: Object.assign(
-            { spriteName: 'close-button' },
-            params.button.renderer,
-          ),
-          collider: { width: 50, height: 50 },
-          direction: 'horizontal',
-        }, params.button.buttonParams),
-        Object.assign({
-          onMouseClick: function() {
-            self.hide();
+        Object.assign(
+          {
+            x: width / 2 + (params.button.objectParams.offsetX || 0),
+            y: -height / 2 + (params.button.objectParams.offsetY || 0),
+            zindex: 50,
+            ref: self,
           },
-        }, params.button.events || {})
+          params.button.objectParams,
+        ),
+        Object.assign(
+          {
+            spriteRenderer: Object.assign(
+              { spriteName: 'close-button' },
+              params.button.renderer,
+            ),
+            collider: { width: 50, height: 50 },
+            direction: 'horizontal',
+          },
+          params.button.buttonParams,
+        ),
+        Object.assign(
+          {
+            onMouseClick: function() {
+              self.hide();
+            },
+          },
+          params.button.events || {},
+        ),
       );
       this.add(this.closeButton);
     }
@@ -226,11 +235,11 @@ export default class Window extends DE.GameObject {
 
   onHide() {
     this.interactive = false;
-    if (!this.noFade) {
+    if (!this.noFade)
       this.fadeOut(150, true, () => {
         this.enable = false;
+        this.trigger('fade-out');
       });
-    }
     else this.enable = false;
   }
 
@@ -242,7 +251,10 @@ export default class Window extends DE.GameObject {
 
   onShow() {
     this.interactive = true;
-    if (!this.noFade) this.fadeIn(150, true);
+    if (!this.noFade)
+      this.fadeIn(150, true, () => {
+        this.trigger('fade-in');
+      });
     else this.enable = true;
   }
 
