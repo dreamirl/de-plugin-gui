@@ -67,7 +67,7 @@ export default class TabNavigation extends DE.GameObject {
   }
 
   reload() {
-    this.tabs[this.currentTabIndex].onMouseClick();
+    this.tabs[this.currentTabIndex].customonMouseClick();
   }
 
   setActiveTab(index) {
