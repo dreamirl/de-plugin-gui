@@ -130,6 +130,12 @@ export default class TabNavigation extends DE.GameObject {
             self.currentTab.lock(true);
             tabArgs.onMouseClick();
           },
+          onMouseEnter: () => {
+            if (tabArgs.onMouseEnter) tabArgs.onMouseEnter();
+          },
+          onMouseLeave: () => {
+            if (tabArgs.onMouseLeave) tabArgs.onMouseLeave();
+          },
         },
         buttonParams.events || {},
       ),
