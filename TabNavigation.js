@@ -61,9 +61,10 @@ export default class TabNavigation extends DE.GameObject {
     this.currentTabIndex = 0;
   }
 
-  navigateTo(index) {
+  navigateTo(index, noSound) {
     this.tabs[index].lock(false);
-    this.tabs[index].onMouseClick();
+    if (noSound) this.tabs[index].customonMouseClick();
+    else this.tabs[index].onMouseClick();
   }
 
   reload() {
