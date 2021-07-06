@@ -74,6 +74,8 @@ export default class ScrollContainer extends DE.GameObject {
 
     this.add(this.touchContainer);
 
+    this.contentBounds = this.targetContainer.getBounds();
+
     if (scrollContainerParams.scrollBar) {
       const self = this;
       this.updateViewLimit();
@@ -361,7 +363,6 @@ ScrollContainer.prototype.scrollTo = function(x, y) {
 };
 
 ScrollContainer.prototype.updateViewLimit = function() {
-  this.contentBounds = this.targetContainer.getBounds();
   this.viewLimit = {
     width: this.contentWidth
       ? this.contentWidth - this.containerSize.width + this.scrollSpacing
@@ -416,6 +417,7 @@ ScrollContainer.prototype.updateContentSize = function(newSize) {
     }
   }
   if (newSize.scrollSpacing) this.scrollSpacing = newSize.scrollSpacing;
+  this.contentBounds = this.targetContainer.getBounds();
 };
 
 ScrollContainer.prototype.updateScrollSpacing = function(scrollSpacing) {
