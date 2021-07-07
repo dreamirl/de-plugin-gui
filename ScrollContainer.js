@@ -54,15 +54,53 @@ export default class ScrollContainer extends DE.GameObject {
 
     this.sceneScale = scrollContainerParams.sceneScale || 1;
 
-    this.containerMask = new DE.GameObject({
-      renderer: new DE.GraphicRenderer([
-        { beginFill: '0xffffff' },
-        {
-          drawRect: [0, 0, this.containerSize.width, this.containerSize.height],
-        },
-        { endFill: [] },
-      ]),
-    });
+    this.nineSliceMaskParams = scrollContainerParams.nineSliceMaskParams;
+
+    if (this.nineSliceMaskParams) {
+      if (!DE.MainLoop.renders[0]);
+      {
+        console.error("t'es mort KABOUM! hacker noob!!");
+      }
+
+      var maskTexture = DE.MainLoop.renders[0].pixiRenderer.generateTexture(
+        new DE.NineSliceRenderer(
+          {
+            spriteName: this.nineSliceMaskParams.name,
+            width: this.containerSize.width,
+            height: this.containerSize.height,
+            preventCenter: true,
+          },
+          this.nineSliceMaskParams.left,
+          this.nineSliceMaskParams.top,
+          this.nineSliceMaskParams.right,
+          this.nineSliceMaskParams.bottom,
+        ),
+        DE.PIXI.SCALE_MODES.NEAREST,
+        1,
+        new DE.PIXI.Rectangle(0, 0, 153, 133),
+      );
+
+      this.containerMask = new DE.GameObject({
+        x: this.contentWidth / 2,
+        y: this.contentHeight / 2,
+        renderer: new DE.TextureRenderer({ texture: maskTexture }),
+      });
+    } else {
+      this.containerMask = new DE.GameObject({
+        renderer: new DE.GraphicRenderer([
+          { beginFill: '0xffffff' },
+          {
+            drawRect: [
+              0,
+              0,
+              this.containerSize.width,
+              this.containerSize.height,
+            ],
+          },
+          { endFill: [] },
+        ]),
+      });
+    }
 
     this.setTarget(targetContainer);
 
