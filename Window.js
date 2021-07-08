@@ -150,19 +150,11 @@ export default class Window extends DE.GameObject {
       zindex: 2,
     });
 
+    this.add(this.header);
+
     params.content = Object.assign({}, params.content);
-    this.content = new DE.GameObject({
-      x: -width / 2 + (params.content.x || 0),
-      y: -height / 2 + (params.content.y || 0),
-      zindex: 1,
-    });
-    this.content.contentWidth =
-      params.content.width || width - params.content.x;
-
-    this.add(this.header, this.content);
-
     if (params.content.type == 'scroll') {
-      this.scrollContent = new ScrollContainer(
+      this.container = new ScrollContainer(
         {
           x: -width / 2 + (params.content.x || 0),
           y: -height / 2 + (params.content.y || 0),
@@ -173,11 +165,16 @@ export default class Window extends DE.GameObject {
           height: params.content.height || height - params.content.y,
           ...params.content,
         },
-        this.content,
       );
-      this.scrollContent.contentWidth =
-        params.content.width || width - params.content.x;
-      this.add(this.scrollContent);
+      this.content = this.container.content;
+      this.add(this.container);
+    } else {
+      this.content = new DE.GameObject({
+        x: -width / 2 + (params.content.x || 0),
+        y: -height / 2 + (params.content.y || 0),
+        zindex: 1,
+      });
+      this.add(this.content);
     }
 
     if (params.button) {
@@ -266,3 +263,17 @@ export default class Window extends DE.GameObject {
     }
   }
 }
+
+Window.prototype.DEName = 'GUI.Window';
+Window.prototype.addContent = function() {
+  this.content.add.apply(this.content, arguments);
+};
+Window.prototype.removeContent = function() {
+  this.content.remove.apply(this.content, arguments);
+};
+Window.prototype.deleteAllContent = function() {
+  this.content.deleteAll.apply(this.content, arguments);
+};
+Window.prototype.deleteContent = function() {
+  this.content.delete.apply(this.content, arguments);
+};
