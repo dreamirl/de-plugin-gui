@@ -57,9 +57,9 @@ export default class ScrollContainer extends DE.GameObject {
     this.nineSliceMaskParams = scrollContainerParams.nineSliceMaskParams;
 
     if (this.nineSliceMaskParams) {
-      if (!DE.MainLoop.renders[0]);
+      if (!DE.MainLoop.renders[0])
       {
-        console.error("t'es mort KABOUM! hacker noob!!");
+        throw new Error("DE.MainLoop.renders[0] is undefined cannot generate nineslice texture");
       }
 
       var maskTexture = DE.MainLoop.renders[0].pixiRenderer.generateTexture(
