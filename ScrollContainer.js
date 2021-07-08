@@ -67,8 +67,8 @@ export default class ScrollContainer extends DE.GameObject {
           {
             spriteName: this.nineSliceMaskParams.name,
             width: this.containerSize.width,
-            height: this.containerSize.height,
-            preventCenter: true,
+            height: this.containerSize.height + this.nineSliceMaskParams.height,
+            // preventCenter: true,
           },
           this.nineSliceMaskParams.left,
           this.nineSliceMaskParams.top,
@@ -77,7 +77,12 @@ export default class ScrollContainer extends DE.GameObject {
         ),
         DE.PIXI.SCALE_MODES.NEAREST,
         1,
-        new DE.PIXI.Rectangle(0, 0, 153, 133),
+        new DE.PIXI.Rectangle(
+          0,
+          0,
+          this.containerSize.width,
+          this.containerSize.height,
+        ),
       );
 
       this.containerMask = new DE.GameObject({
@@ -101,6 +106,13 @@ export default class ScrollContainer extends DE.GameObject {
         ]),
       });
     }
+    console.log(
+      this.containerMask.width,
+      this.containerMask.height,
+      this.containerMask.x,
+      this.containerMask.y,
+      this.nineSliceMaskParams,
+    );
 
     this.content = new DE.GameObject({
       x: 0,
@@ -350,8 +362,7 @@ export default class ScrollContainer extends DE.GameObject {
 
         if (
           this.content.x > this.scrollSpacing ||
-          this.content.x <
-            this.viewLimit.width - this.contentBounds.width - 10
+          this.content.x < this.viewLimit.width - this.contentBounds.width - 10
         ) {
           this.inertia.x = 0;
         }
@@ -433,6 +444,9 @@ ScrollContainer.prototype.updateViewLimit = function() {
 };
 
 ScrollContainer.prototype.updateContentSize = function(newSize) {
+  console.log('plop');
+  console.log(newSize);
+
   const oneScroll = this.mouseScrollSpeed * 120;
   if (newSize.width) {
     this.contentWidth = newSize.width;
@@ -464,6 +478,21 @@ ScrollContainer.prototype.updateContentSize = function(newSize) {
   }
   if (newSize.scrollSpacing) this.scrollSpacing = newSize.scrollSpacing;
   this.contentBounds = this.content.getBounds();
+  this.updateScrollMaskSize(newSize);
+};
+ScrollContainer.prototype.updateScrollMaskSize = function(newSize) {
+  this.containerMask.width = newSize.width
+    ? newSize.width
+    : this.containerMask.width;
+  this.containerMask.width = newSize.height
+    ? newSize.height
+    : this.containerMask.height;
+  console.log(
+    'update mask',
+    this.contentheight,
+    this.containerMask.height,
+    this.containerMask.width,
+  );
 };
 
 ScrollContainer.prototype.updateScrollSpacing = function(scrollSpacing) {
