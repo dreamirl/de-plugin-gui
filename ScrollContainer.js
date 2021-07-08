@@ -68,7 +68,7 @@ export default class ScrollContainer extends DE.GameObject {
             spriteName: this.nineSliceMaskParams.name,
             width: this.containerSize.width,
             height: this.containerSize.height + this.nineSliceMaskParams.height,
-            // preventCenter: true,
+            preventCenter: true,
           },
           this.nineSliceMaskParams.left,
           this.nineSliceMaskParams.top,
@@ -86,8 +86,8 @@ export default class ScrollContainer extends DE.GameObject {
       );
 
       this.containerMask = new DE.GameObject({
-        x: this.contentWidth / 2,
-        y: this.contentHeight / 2,
+        x: this.containerSize.width / 2,
+        y: this.containerSize.height / 2,
         renderer: new DE.TextureRenderer({ texture: maskTexture }),
       });
     } else {
@@ -106,13 +106,6 @@ export default class ScrollContainer extends DE.GameObject {
         ]),
       });
     }
-    console.log(
-      this.containerMask.width,
-      this.containerMask.height,
-      this.containerMask.x,
-      this.containerMask.y,
-      this.nineSliceMaskParams,
-    );
 
     this.content = new DE.GameObject({
       x: 0,
@@ -444,9 +437,6 @@ ScrollContainer.prototype.updateViewLimit = function() {
 };
 
 ScrollContainer.prototype.updateContentSize = function(newSize) {
-  console.log('plop');
-  console.log(newSize);
-
   const oneScroll = this.mouseScrollSpeed * 120;
   if (newSize.width) {
     this.contentWidth = newSize.width;
@@ -478,22 +468,19 @@ ScrollContainer.prototype.updateContentSize = function(newSize) {
   }
   if (newSize.scrollSpacing) this.scrollSpacing = newSize.scrollSpacing;
   this.contentBounds = this.content.getBounds();
-  this.updateScrollMaskSize(newSize);
 };
-ScrollContainer.prototype.updateScrollMaskSize = function(newSize) {
-  this.containerMask.width = newSize.width
-    ? newSize.width
-    : this.containerMask.width;
-  this.containerMask.width = newSize.height
-    ? newSize.height
-    : this.containerMask.height;
-  console.log(
-    'update mask',
-    this.contentheight,
-    this.containerMask.height,
-    this.containerMask.width,
-  );
-};
+// ScrollContainer.prototype.updateScrollMaskSize = function(newSize) {
+//   this.containerMask.width = newSize.width
+//     ? newSize.width
+//     : this.containerMask.width;
+//   this.containerMask.width = newSize.height
+//     ? newSize.height
+//     : this.containerMask.height;
+// };
+// ScrollContainer.prototype.updateScrollMaskPosition = function() {
+//   this.containerMask.x = this.containerSize.width / 2;
+//   this.containerMask.y = this.containerSize.height / 2;
+// };
 
 ScrollContainer.prototype.updateScrollSpacing = function(scrollSpacing) {
   this.scrollSpacing = scrollSpacing;
