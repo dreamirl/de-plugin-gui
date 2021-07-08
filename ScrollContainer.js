@@ -469,18 +469,6 @@ ScrollContainer.prototype.updateContentSize = function(newSize) {
   if (newSize.scrollSpacing) this.scrollSpacing = newSize.scrollSpacing;
   this.contentBounds = this.content.getBounds();
 };
-// ScrollContainer.prototype.updateScrollMaskSize = function(newSize) {
-//   this.containerMask.width = newSize.width
-//     ? newSize.width
-//     : this.containerMask.width;
-//   this.containerMask.width = newSize.height
-//     ? newSize.height
-//     : this.containerMask.height;
-// };
-// ScrollContainer.prototype.updateScrollMaskPosition = function() {
-//   this.containerMask.x = this.containerSize.width / 2;
-//   this.containerMask.y = this.containerSize.height / 2;
-// };
 
 ScrollContainer.prototype.updateScrollSpacing = function(scrollSpacing) {
   this.scrollSpacing = scrollSpacing;
