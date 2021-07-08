@@ -274,8 +274,9 @@ Button.prototype.onMouseClick = function(event) {
   if (this.locked) {
     return;
   }
-  if (this.sound || Button.prototype.defaultSound)
+  if (this.sound || Button.prototype.defaultSound) {
     DE.Audio.fx.play(this.sound || Button.prototype.defaultSound);
+  }
   this.changeState(event, this.stateOnClick);
   this.customonMouseClick(event);
   return true;
