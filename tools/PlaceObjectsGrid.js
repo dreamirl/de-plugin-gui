@@ -67,8 +67,8 @@ export default function(objects, params) {
   var maxObjectHeight = 0;
 
   objects.forEach((object) => {
-    var objectWidth = object.width;
-    var objectHeight = object.height;
+    var objectWidth = object.fixedWidth || object.width;
+    var objectHeight = object.fixedHeight || object.height;
 
     if (gridParams.prioOrder == 'horizontal') {
       if (

@@ -47,13 +47,13 @@ export default function(object, params) {
     return;
   }
 
-  var parent = params.parent ? params.parent : object.parent;
+  var parent = params.parent || object.parent;
 
   //optimisation perf
-  var objectWidth = object.width;
-  var objectHeight = object.height;
-  var parentWidth = parent.width;
-  var parentHeight = parent.height;
+  var objectWidth = object.fixedWidth || object.width;
+  var objectHeight = object.fixedHeight || object.height;
+  var parentWidth = parent.fixedWidth || parent.width;
+  var parentHeight = parent.fixedHeight || parent.height;
 
   switch (positionParams.alignX) {
     case 'center':
