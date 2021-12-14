@@ -70,7 +70,7 @@ export default function(objects, params) {
     var objectWidth = object.fixedWidth || object.width;
     var objectHeight = object.fixedHeight || object.height;
 
-    if (gridParams.prioOrder == 'horizontal') {
+    if (gridParams.prioOrder == 'horizontal' && gridParams.maxWidth) {
       if (
         gridParams.addOrderX == 'right' &&
         x + objectWidth > gridParams.maxWidth - gridParams.marginX * 2
@@ -86,7 +86,7 @@ export default function(objects, params) {
         y = nextY(y, maxObjectHeight, gridParams);
         maxObjectHeight = 0;
       }
-    } else {
+    } else if (gridParams.prioOrder == 'vertical' && gridParams.maxHeight){
       if (
         gridParams.addOrderY == 'bottom' &&
         y + objectHeight > gridParams.maxHeight - gridParams.marginY * 2
