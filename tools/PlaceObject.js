@@ -23,6 +23,8 @@ function setParams(outparams, params, value) {
 }
 
 export default function(object, params) {
+  let isGameObject = object instanceof DE.GameObject;
+
   var positionParams = Object.assign(
     {
       alignX: 'left',
@@ -90,6 +92,11 @@ export default function(object, params) {
       break;
   }
   if (params.parent) {
-    parent.add(object);
+    if(isGameObject) {
+      parent.add(object);
+    } else {
+      parent.addRenderer(object);
+    }
   }
+  return object;
 }
