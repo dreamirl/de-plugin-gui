@@ -25,10 +25,12 @@ function setParams(outparams, params, value) {
 export default function(object, params) {
   let isGameObject = object instanceof DE.GameObject;
 
+  if(!params) params = {};
+
   var positionParams = Object.assign(
     {
-      alignX: 'left',
-      alignY: 'top',
+      alignX: 'center',
+      alignY: 'center',
       marginX: 0,
       marginY: 0,
       offsetX: 0,
