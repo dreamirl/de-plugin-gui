@@ -46,8 +46,6 @@ export default function(objects, params) {
       spacingX: 0,
       spacingY: 0,
       //objects
-      alignX: 'left',
-      alignY: 'top',
       marginX: 0,
       marginY: 0,
       offsetX: 0,
@@ -105,13 +103,13 @@ export default function(objects, params) {
     }
 
     PlaceObject(object, {
-      alignX: gridParams.alignX,
-      alignY: gridParams.alignY,
+      parent: gridParams.parent,
+      alignX: gridParams.addOrderX == 'right' ? 'left' : 'right',
+      alignY: gridParams.addOrderX == 'bottom' ? 'top' : 'bottom',
       marginX: gridParams.marginX,
       marginY: gridParams.marginY,
       offsetX: gridParams.offsetX + x,
       offsetY: gridParams.offsetY + y,
-      parent: gridParams.parent,
     });
 
     if (gridParams.prioOrder == 'horizontal') {
