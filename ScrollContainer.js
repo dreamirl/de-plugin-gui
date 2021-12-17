@@ -57,9 +57,10 @@ export default class ScrollContainer extends DE.GameObject {
     this.nineSliceMaskParams = scrollContainerParams.nineSliceMaskParams;
 
     if (this.nineSliceMaskParams) {
-      if (!DE.MainLoop.renders[0])
-      {
-        throw new Error("DE.MainLoop.renders[0] is undefined cannot generate nineslice texture");
+      if (!DE.MainLoop.renders[0]) {
+        throw new Error(
+          'DE.MainLoop.renders[0] is undefined cannot generate nineslice texture',
+        );
       }
 
       var maskTexture = DE.MainLoop.renders[0].pixiRenderer.generateTexture(
@@ -447,7 +448,8 @@ ScrollContainer.prototype.updateContentSize = function(newSize) {
       this.scrollBarSizeWidth = isFinite(this.scrollBarSizeWidth)
         ? this.scrollBarSizeWidth
         : 0;
-      this.horizontalScrollBar.enable = maxNbScrolls >= 1;
+      this.horizontalScrollBar.enable =
+        this.containerSize.width < this.contentWidth;
       this.horizontalBarBtn.renderer.height = this.scrollBarSizeWidth;
       this.horizontalBarBtn.renderer.center();
     }
@@ -461,7 +463,8 @@ ScrollContainer.prototype.updateContentSize = function(newSize) {
       this.scrollBarSizeHeight = isFinite(this.scrollBarSizeHeight)
         ? this.scrollBarSizeHeight
         : 0;
-      this.verticalScrollBar.enable = maxNbScrolls >= 1;
+      this.verticalScrollBar.enable =
+        this.containerSize.height < this.contentHeight;
       this.verticalBarBtn.renderer.height = this.scrollBarSizeHeight;
       this.verticalBarBtn.renderer.center();
     }
