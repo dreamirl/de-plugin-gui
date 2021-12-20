@@ -107,7 +107,7 @@ export default function(objects, params) {
       {
         parent: gridParams.parent,
         alignX: gridParams.addOrderX == 'right' ? 'left' : 'right',
-        alignY: gridParams.addOrderX == 'bottom' ? 'top' : 'bottom',
+        alignY: gridParams.addOrderY == 'bottom' ? 'top' : 'bottom',
         marginX: gridParams.marginX,
         marginY: gridParams.marginY,
         offsetX: gridParams.offsetX + x,
