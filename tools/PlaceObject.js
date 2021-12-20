@@ -22,25 +22,10 @@ function setParams(outparams, params, value) {
   }
 }
 
-export default function(object, params) {
+export default function(object, params, wipePosCache) {
   let isGameObject = object instanceof DE.GameObject;
 
-  if(!params) params = {};
-
-  var positionParams = Object.assign(
-    {
-      alignX: 'center',
-      alignY: 'center',
-      marginX: 0,
-      marginY: 0,
-      offsetX: 0,
-      offsetY: 0,
-    },
-    params,
-  );
-
-  setParams(positionParams, params, 'margin');
-  setParams(positionParams, params, 'offset');
+  if (!params) params = {};
 
   if (!object.parent && !params.parent) {
     console.error(
@@ -52,6 +37,23 @@ export default function(object, params) {
   }
 
   var parent = params.parent || object.parent;
+  var addToParent = !!params.parent;
+  delete params.parent;
+
+  var positionParams = {
+    alignX: 'center',
+    alignY: 'center',
+    marginX: 0,
+    marginY: 0,
+    offsetX: 0,
+    offsetY: 0,
+    ...(wipePosCache ? {} : object.positionParams),
+    ...params,
+  };
+  object.positionParams = positionParams;
+
+  setParams(positionParams, params, 'margin');
+  setParams(positionParams, params, 'offset');
 
   //optimisation perf
   var objectWidth = object.fixedWidth || object.width;
@@ -93,7 +95,7 @@ export default function(object, params) {
       console.error('Wrong alignY param', positionParams.alignY);
       break;
   }
-  if (params.parent) {
+  if (addToParent) {
     if(isGameObject) {
       parent.add(object);
     } else {

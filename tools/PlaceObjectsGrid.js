@@ -102,15 +102,19 @@ export default function(objects, params) {
       }
     }
 
-    PlaceObject(object, {
-      parent: gridParams.parent,
-      alignX: gridParams.addOrderX == 'right' ? 'left' : 'right',
-      alignY: gridParams.addOrderX == 'bottom' ? 'top' : 'bottom',
-      marginX: gridParams.marginX,
-      marginY: gridParams.marginY,
-      offsetX: gridParams.offsetX + x,
-      offsetY: gridParams.offsetY + y,
-    });
+    PlaceObject(
+      object, 
+      {
+        parent: gridParams.parent,
+        alignX: gridParams.addOrderX == 'right' ? 'left' : 'right',
+        alignY: gridParams.addOrderX == 'bottom' ? 'top' : 'bottom',
+        marginX: gridParams.marginX,
+        marginY: gridParams.marginY,
+        offsetX: gridParams.offsetX + x,
+        offsetY: gridParams.offsetY + y,
+      }, 
+      true
+    );
 
     if (gridParams.prioOrder == 'horizontal') {
       x = nextX(x, objectWidth, gridParams);
