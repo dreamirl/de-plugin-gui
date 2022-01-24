@@ -59,7 +59,7 @@ export default class Button extends DE.GameObject {
     if (buttonParams.background) {
       const bgParams = Object.assign(
         buttonParams.background,
-        buttonParams.genericRenderersParams || {}
+        buttonParams.genericRenderersParams || {},
       );
       var bgRd;
       if (buttonParams.background.textureName) {
@@ -69,7 +69,7 @@ export default class Button extends DE.GameObject {
       } else if (buttonParams.background.frames) {
         bgRd = new DE.AnimatedTextureRenderer(
           buttonParams.background.frames,
-          buttonParams.background
+          buttonParams.background,
         );
       }
       bgRd.zindex = -1;
@@ -80,7 +80,7 @@ export default class Button extends DE.GameObject {
       for (var i in buttonParams.advancedStates) {
         let st = Object.assign(
           buttonParams.advancedStates[i],
-          buttonParams.genericRenderersParams || {}
+          buttonParams.genericRenderersParams || {},
         );
         var rd;
         if (st.frames) {
@@ -96,21 +96,24 @@ export default class Button extends DE.GameObject {
         rd.zindex = rd.zindex === undefined ? 1 : rd.zindex;
         renderers.push(rd);
       }
-
     } else {
       if (buttonParams.spriteRenderer) {
-        spriteRd = new DE.SpriteRenderer(Object.assign(
-          buttonParams.spriteRenderer,
-          buttonParams.genericRenderersParams || {}
-        ));
+        spriteRd = new DE.SpriteRenderer(
+          Object.assign(
+            buttonParams.spriteRenderer,
+            buttonParams.genericRenderersParams || {},
+          ),
+        );
         spriteRd.zindex = 1;
         renderers.push(spriteRd);
       }
       if (buttonParams.textureRenderer) {
-        textureRd = new DE.TextureRenderer(Object.assign(
-          buttonParams.textureRenderer,
-          buttonParams.genericRenderersParams || {}
-        ));
+        textureRd = new DE.TextureRenderer(
+          Object.assign(
+            buttonParams.textureRenderer,
+            buttonParams.genericRenderersParams || {},
+          ),
+        );
         renderers.push(textureRd);
       }
       if (buttonParams.animatedTextureRenderer) {
@@ -118,8 +121,8 @@ export default class Button extends DE.GameObject {
           buttonParams.animatedTextureRenderer.frames,
           Object.assign(
             buttonParams.animatedTextureRenderer,
-            buttonParams.genericRenderersParams || {}
-          )
+            buttonParams.genericRenderersParams || {},
+          ),
         );
         renderers.push(animRd);
       }
@@ -154,9 +157,11 @@ export default class Button extends DE.GameObject {
       this.advancedStates = buttonParams.advancedStates;
       this.statesRenderer = advStates;
 
-      if (buttonParams.stateOnClick &&
+      if (
+        buttonParams.stateOnClick &&
         buttonParams.advancedStates[buttonParams.stateOnClick] &&
-        buttonParams.advancedStates[buttonParams.stateOnClick].frames) {
+        buttonParams.advancedStates[buttonParams.stateOnClick].frames
+      ) {
         this.statesRenderer[buttonParams.stateOnClick].onAnimEnd = () => {
           this.statesRenderer[buttonParams.stateOnClick].gotoAndPause(0);
           this.activeAdvancedState(this.stateOnUp);
@@ -173,7 +178,8 @@ export default class Button extends DE.GameObject {
       }
       if (animRd) {
         this.animatedTextureRenderer = animRd;
-        this.animatedTextureRendererStates = buttonParams.animatedTextureRenderer.states;
+        this.animatedTextureRendererStates =
+          buttonParams.animatedTextureRenderer.states;
       }
     }
 
@@ -206,7 +212,7 @@ export default class Button extends DE.GameObject {
       icon.zindex = 3;
       this.addRenderer(icon);
       this.iconRenderer = icon;
-        
+
       if (icon.marginRight) {
         icon.x = (this.width / 2 - (icon.width / 2 + icon.marginRight)) >> 0;
         if (textRd && textRd.x == 0) {
@@ -227,8 +233,10 @@ export default class Button extends DE.GameObject {
         }
       } else if (icon.margin !== false) {
         if (textRd) {
-          let textWidth = DE.PIXI.TextMetrics.measureText(textRd.text, textRd.style)
-            .width;
+          let textWidth = DE.PIXI.TextMetrics.measureText(
+            textRd.text,
+            textRd.style,
+          ).width;
         }
         icon.x = (textWidth / 2 + (icon.margin || icon.width / 2)) >> 0;
       }
@@ -237,14 +245,17 @@ export default class Button extends DE.GameObject {
     if (this.isAdvancedButton) {
       this.activeAdvancedState('idle');
     }
-    
+
     this.cursor = 'hover';
   }
 }
 
 Button.prototype.activeAdvancedState = function(stateName) {
   if (!this.statesRenderer[stateName]) {
-    return console.error('The state ' + stateName + ' does not exists on the button', this.id || this);
+    return console.error(
+      'The state ' + stateName + ' does not exists on the button',
+      this.id || this,
+    );
   }
 
   for (var i in this.statesRenderer) {
@@ -255,7 +266,7 @@ Button.prototype.activeAdvancedState = function(stateName) {
 
   this.onStateChanged(stateName, this.statesRenderer[stateName]);
 };
-Button.prototype.onStateChanged = function() {}
+Button.prototype.onStateChanged = function() {};
 
 Button.prototype.lock = function(value) {
   this.locked = value === false ? false : true;
@@ -265,7 +276,7 @@ Button.prototype.lock = function(value) {
   if (this.isAdvancedButton && this.locked) {
     this.activeAdvancedState('locked');
   }
-  this.onLock();
+  this.onLock(value);
 };
 Button.prototype.onLock = function() {};
 
@@ -278,6 +289,7 @@ Button.prototype.onMouseClick = function(event) {
     DE.Audio.fx.play(this.sound || Button.prototype.defaultSound);
   }
   this.changeState(event, this.stateOnClick);
+  console.log('click', this);
   this.customonMouseClick(event);
   return true;
 };
