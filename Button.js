@@ -289,7 +289,6 @@ Button.prototype.onMouseClick = function(event) {
     DE.Audio.fx.play(this.sound || Button.prototype.defaultSound);
   }
   this.changeState(event, this.stateOnClick);
-  console.log('click', this);
   this.customonMouseClick(event);
   return true;
 };
