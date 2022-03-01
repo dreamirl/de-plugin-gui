@@ -43,6 +43,8 @@ export default class ScrollContainer extends DE.GameObject {
     this.mouseScrollSpeed = scrollContainerParams.mouseScrollSpeed || 0.6;
     this.scrollX = scrollContainerParams.scrollX;
     this.scrollY = scrollContainerParams.scrollY;
+    this.scrollYHorizontalScroll = scrollContainerParams.scrollYHorizontalScroll;
+    this.scrollXVerticalScroll = scrollContainerParams.scrollXVerticalScroll;
     this.containerSize = {
       width: scrollContainerParams.width,
       height: scrollContainerParams.height,
@@ -376,8 +378,14 @@ export default class ScrollContainer extends DE.GameObject {
     };
 
     this.onscroll = function(event) {
+      const x = event.deltaX * this.mouseScrollSpeed;
+      const y = -event.deltaY * this.mouseScrollSpeed;
+
       if (!this.locked && this.pointerInside) {
-        this.scroll(0, this.mouseScrollSpeed * -event.deltaY);
+        this.scroll(
+          x + (this.scrollYHorizontalScroll ? y : 0),
+          y + (this.scrollXVerticalScroll ? x : 0)
+        );
       }
     };
     if (!scrollContainerParams.preventWheel)
