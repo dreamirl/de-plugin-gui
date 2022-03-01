@@ -43,7 +43,7 @@ export default class ScrollContainer extends DE.GameObject {
     this.mouseScrollSpeed = scrollContainerParams.mouseScrollSpeed || 0.6;
     this.scrollX = scrollContainerParams.scrollX;
     this.scrollY = scrollContainerParams.scrollY;
-    this.scrollYHorizontalScroll = scrollContainerParams.scrollYHorizontalScroll;
+    this.scrollYHorizontalScroll = scrollContainerParams.scrollYHorizontalScroll === false ? false : true;
     this.scrollXVerticalScroll = scrollContainerParams.scrollXVerticalScroll;
     this.containerSize = {
       width: scrollContainerParams.width,
