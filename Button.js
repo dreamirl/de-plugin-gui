@@ -65,7 +65,7 @@ export default class Button extends DE.GameObject {
       if (buttonParams.background.textureName) {
         bgRd = new DE.TextureRenderer(buttonParams.background);
       } else if (buttonParams.background.spriteName) {
-        bgRd = new DE.TextureRenderer(buttonParams.background);
+        bgRd = new DE.SpriteRenderer(buttonParams.background);
       } else if (buttonParams.background.frames) {
         bgRd = new DE.AnimatedTextureRenderer(
           buttonParams.background.frames,
