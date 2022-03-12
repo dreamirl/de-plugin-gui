@@ -245,8 +245,6 @@ export default class Button extends DE.GameObject {
     if (this.isAdvancedButton) {
       this.activeAdvancedState('idle');
     }
-
-    this.cursor = 'hover';
   }
 }
 
