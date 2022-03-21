@@ -5,10 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write \"**/*.{js,json}\""
+    "format": "prettier --config .prettierrc.json --ignore-path .prettierignore --write \"**/*.{js,json,ts,tsx,md}\"",
+    "prepare": "husky install"
   },
   "devDependencies": {
-    "prettier": "^1.18.2"
+    "husky": "^7.0.0",
+    "prettier": "^2.2.0",
+    "pretty-quick": "^3.1.1"
   },
   "keywords": [],
   "author": "",
