@@ -213,7 +213,7 @@ export default class Window extends DE.GameObject {
         ),
         Object.assign(
           {
-            onMouseClick: function() {
+            onMouseClick: function () {
               self.hide();
             },
           },
@@ -265,15 +265,15 @@ export default class Window extends DE.GameObject {
 }
 
 Window.prototype.DEName = 'GUI.Window';
-Window.prototype.addContent = function() {
+Window.prototype.addContent = function () {
   this.content.add.apply(this.content, arguments);
 };
-Window.prototype.removeContent = function() {
+Window.prototype.removeContent = function () {
   this.content.remove.apply(this.content, arguments);
 };
-Window.prototype.deleteAllContent = function() {
+Window.prototype.deleteAllContent = function () {
   this.content.deleteAll.apply(this.content, arguments);
 };
-Window.prototype.deleteContent = function() {
+Window.prototype.deleteContent = function () {
   this.content.delete.apply(this.content, arguments);
 };

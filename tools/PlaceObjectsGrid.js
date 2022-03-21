@@ -34,7 +34,7 @@ function setParams(outparams, params, value) {
   }
 }
 
-export default function(objects, params) {
+export default function (objects, params) {
   var gridParams = Object.assign(
     {
       //grid
@@ -84,7 +84,7 @@ export default function(objects, params) {
         y = nextY(y, maxObjectHeight, gridParams);
         maxObjectHeight = 0;
       }
-    } else if (gridParams.prioOrder == 'vertical' && gridParams.maxHeight){
+    } else if (gridParams.prioOrder == 'vertical' && gridParams.maxHeight) {
       if (
         gridParams.addOrderY == 'bottom' &&
         y + objectHeight > gridParams.maxHeight - gridParams.marginY * 2
@@ -103,7 +103,7 @@ export default function(objects, params) {
     }
 
     PlaceObject(
-      object, 
+      object,
       {
         parent: gridParams.parent,
         alignX: gridParams.addOrderX == 'right' ? 'left' : 'right',
@@ -112,8 +112,8 @@ export default function(objects, params) {
         marginY: gridParams.marginY,
         offsetX: gridParams.offsetX + x,
         offsetY: gridParams.offsetY + y,
-      }, 
-      true
+      },
+      true,
     );
 
     if (gridParams.prioOrder == 'horizontal') {

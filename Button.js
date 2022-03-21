@@ -183,12 +183,12 @@ export default class Button extends DE.GameObject {
       }
     }
 
-    this.customonMouseClick = function() {};
-    this.customonMouseEnter = function() {};
-    this.customonMouseLeave = function() {};
-    this.customonMouseDown = function() {};
-    this.customonMouseUp = function() {};
-    this.customonMouseUpOutside = function() {};
+    this.customonMouseClick = function () {};
+    this.customonMouseEnter = function () {};
+    this.customonMouseLeave = function () {};
+    this.customonMouseDown = function () {};
+    this.customonMouseUp = function () {};
+    this.customonMouseUpOutside = function () {};
     for (var i in events) this['custom' + i] = events[i];
     this.stateOnClick = buttonParams.stateOnClick || 'hover';
     this.stateOnUp = buttonParams.stateOnUp || 'hover';
@@ -248,7 +248,7 @@ export default class Button extends DE.GameObject {
   }
 }
 
-Button.prototype.activeAdvancedState = function(stateName) {
+Button.prototype.activeAdvancedState = function (stateName) {
   if (!this.statesRenderer[stateName]) {
     return console.error(
       'The state ' + stateName + ' does not exists on the button',
@@ -264,9 +264,9 @@ Button.prototype.activeAdvancedState = function(stateName) {
 
   this.onStateChanged(stateName, this.statesRenderer[stateName]);
 };
-Button.prototype.onStateChanged = function() {};
+Button.prototype.onStateChanged = function () {};
 
-Button.prototype.lock = function(value) {
+Button.prototype.lock = function (value) {
   this.locked = value === false ? false : true;
   this.cursor = this.locked ? 'null' : 'pointer';
   this.changeState(null, 'idle');
@@ -276,10 +276,10 @@ Button.prototype.lock = function(value) {
   }
   this.onLock(value);
 };
-Button.prototype.onLock = function() {};
+Button.prototype.onLock = function () {};
 
 Button.prototype.defaultSound = undefined; // define this for a default sounds applied on all buttons
-Button.prototype.onMouseClick = function(event) {
+Button.prototype.onMouseClick = function (event) {
   if (this.locked) {
     return;
   }
@@ -291,7 +291,7 @@ Button.prototype.onMouseClick = function(event) {
   return true;
 };
 // let user choose if he want to use it
-Button.prototype.onMouseUp = function(event) {
+Button.prototype.onMouseUp = function (event) {
   if (this.locked) {
     return;
   }
@@ -300,7 +300,7 @@ Button.prototype.onMouseUp = function(event) {
   return true;
 };
 
-Button.prototype.onMouseUpOutside = function(event) {
+Button.prototype.onMouseUpOutside = function (event) {
   if (this.locked) {
     return;
   }
@@ -309,7 +309,7 @@ Button.prototype.onMouseUpOutside = function(event) {
   return true;
 };
 
-Button.prototype.onMouseDown = function(event) {
+Button.prototype.onMouseDown = function (event) {
   if (this.locked) {
     return;
   }
@@ -320,7 +320,7 @@ Button.prototype.onMouseDown = function(event) {
   return true;
 };
 
-Button.prototype.onMouseEnter = function(event) {
+Button.prototype.onMouseEnter = function (event) {
   if (this.locked) {
     return;
   }
@@ -329,7 +329,7 @@ Button.prototype.onMouseEnter = function(event) {
   if (e) return e;
 };
 
-Button.prototype.onMouseLeave = function(event) {
+Button.prototype.onMouseLeave = function (event) {
   if (this.locked) {
     return;
   }
@@ -338,7 +338,7 @@ Button.prototype.onMouseLeave = function(event) {
   if (e) return e;
 };
 
-Button.prototype.changeState = function(event, type) {
+Button.prototype.changeState = function (event, type) {
   if (this.isAdvancedButton) {
     this.activeAdvancedState(type);
     return;

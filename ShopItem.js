@@ -19,18 +19,18 @@ export default class ShopItem extends DE.GameObject {
         renderers: [new DE.SpriteRenderer(customParams.frame)],
         cursor: 'pointer',
         interactive: true,
-        pointerover: function() {
+        pointerover: function () {
           if (this.locked) {
             return;
           }
           this.alpha = 1;
         },
-        pointerout: function() {
+        pointerout: function () {
           this.alpha = 0.9;
         },
         // clic on the frame = route to product's page
         // custom implementation required
-        pointerup: function(e) {
+        pointerup: function (e) {
           if (this.locked) {
             return;
           }
@@ -76,9 +76,8 @@ export default class ShopItem extends DE.GameObject {
     /**
      * one buy button = one currency, make it easy
      */
-    const isPlatformPurchase = DE.Platform.shop.isPlatformPurchase(
-      customParams,
-    );
+    const isPlatformPurchase =
+      DE.Platform.shop.isPlatformPurchase(customParams);
     this.button = new Button(
       {
         zindex: 1,

@@ -122,7 +122,7 @@ export default class TabNavigation extends DE.GameObject {
       Object.assign(tabArgs.buttonParams, buttonParams.buttonParams || {}),
       Object.assign(
         {
-          onMouseClick: function() {
+          onMouseClick: function () {
             if (self.container) self.container.deleteAll();
             self.currentTab.lock(false);
             self.currentTab.onMouseLeave();

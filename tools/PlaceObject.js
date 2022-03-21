@@ -22,7 +22,7 @@ function setParams(outparams, params, value) {
   }
 }
 
-export default function(object, params, wipePosCache) {
+export default function (object, params, wipePosCache) {
   let isGameObject = object instanceof DE.GameObject;
 
   if (!params) params = {};
@@ -96,7 +96,7 @@ export default function(object, params, wipePosCache) {
       break;
   }
   if (addToParent) {
-    if(isGameObject) {
+    if (isGameObject) {
       parent.add(object);
     } else {
       parent.addRenderer(object);

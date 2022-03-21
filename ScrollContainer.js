@@ -154,13 +154,13 @@ export default class ScrollContainer extends DE.GameObject {
           },
           {},
           {
-            onMouseDown: function() {
+            onMouseDown: function () {
               this.parent.mouseDown = true;
             },
-            onMouseUp: function() {
+            onMouseUp: function () {
               setTimeout(() => (self.verticalScrollBar.mouseDown = false), 10);
             },
-            onMouseUpOutside: function() {
+            onMouseUpOutside: function () {
               setTimeout(() => (self.verticalScrollBar.mouseDown = false), 10);
             },
           },
@@ -185,7 +185,7 @@ export default class ScrollContainer extends DE.GameObject {
               2, //bottom
             ),
           ],
-          updateScrollBar: function() {
+          updateScrollBar: function () {
             self.verticalBarBtn.y =
               ((-(self.content.y - self.scrollSpacing) *
                 (self.containerSize.height - self.scrollBarSizeHeight)) /
@@ -223,16 +223,16 @@ export default class ScrollContainer extends DE.GameObject {
           },
           {},
           {
-            onMouseDown: function() {
+            onMouseDown: function () {
               this.parent.mouseDown = true;
             },
-            onMouseUp: function() {
+            onMouseUp: function () {
               setTimeout(
                 () => (self.horizontalScrollBar.mouseDown = false),
                 10,
               );
             },
-            onMouseUpOutside: function() {
+            onMouseUpOutside: function () {
               setTimeout(
                 () => (self.horizontalScrollBar.mouseDown = false),
                 10,
@@ -260,7 +260,7 @@ export default class ScrollContainer extends DE.GameObject {
               2, //bottom
             ),
           ],
-          updateScrollBar: function() {
+          updateScrollBar: function () {
             self.horizontalBarBtn.x =
               ((-(self.content.x - self.scrollSpacing) *
                 (self.containerSize.width - self.scrollBarSizeWidth)) /
@@ -375,7 +375,7 @@ export default class ScrollContainer extends DE.GameObject {
       this.startDist = undefined;
     };
 
-    this.onscroll = function(event) {
+    this.onscroll = function (event) {
       if (!this.locked && this.pointerInside) {
         this.scroll(0, this.mouseScrollSpeed * -event.deltaY);
       }
@@ -394,26 +394,26 @@ export default class ScrollContainer extends DE.GameObject {
 
 ScrollContainer.prototype.DEName = 'GUI.ScrollContainer';
 
-ScrollContainer.prototype.resetScroll = function() {
+ScrollContainer.prototype.resetScroll = function () {
   this.content.x = 0;
   this.content.y = 0;
 };
 
-ScrollContainer.prototype.scroll = function(x, y) {
+ScrollContainer.prototype.scroll = function (x, y) {
   if (this.scrollX && x) this.content.x += x;
   if (this.scrollY && y) this.content.y += y;
 
   this.limitScroll();
 };
 
-ScrollContainer.prototype.scrollTo = function(x, y) {
+ScrollContainer.prototype.scrollTo = function (x, y) {
   if (this.scrollX && x !== undefined) this.content.x = x;
   if (this.scrollY && y !== undefined) this.content.y = y;
 
   this.limitScroll();
 };
 
-ScrollContainer.prototype.updateViewLimit = function() {
+ScrollContainer.prototype.updateViewLimit = function () {
   this.viewLimit = {
     width: this.contentWidth
       ? this.contentWidth - this.containerSize.width + this.scrollSpacing
@@ -437,7 +437,7 @@ ScrollContainer.prototype.updateViewLimit = function() {
   }
 };
 
-ScrollContainer.prototype.updateContentSize = function(newSize) {
+ScrollContainer.prototype.updateContentSize = function (newSize) {
   const oneScroll = this.mouseScrollSpeed * 120;
   if (newSize.width) {
     this.contentWidth = newSize.width;
@@ -473,11 +473,11 @@ ScrollContainer.prototype.updateContentSize = function(newSize) {
   this.contentBounds = this.content.getBounds();
 };
 
-ScrollContainer.prototype.updateScrollSpacing = function(scrollSpacing) {
+ScrollContainer.prototype.updateScrollSpacing = function (scrollSpacing) {
   this.scrollSpacing = scrollSpacing;
 };
 
-ScrollContainer.prototype.limitScroll = function() {
+ScrollContainer.prototype.limitScroll = function () {
   this.updateViewLimit();
 
   if (this.scrollX) {
@@ -496,7 +496,7 @@ ScrollContainer.prototype.limitScroll = function() {
   }
 };
 
-ScrollContainer.prototype.removeTarget = function() {
+ScrollContainer.prototype.removeTarget = function () {
   this.locked = true;
   this.remove(this.containerMask);
   this.inertia = { x: 0, y: 0 };
@@ -508,7 +508,7 @@ ScrollContainer.prototype.removeTarget = function() {
   }
 };
 
-ScrollContainer.prototype.setTarget = function(content) {
+ScrollContainer.prototype.setTarget = function (content) {
   if (this.content) this.removeTarget();
 
   this.content = content;
@@ -518,7 +518,7 @@ ScrollContainer.prototype.setTarget = function(content) {
   this.resetScroll();
 };
 
-ScrollContainer.prototype.updateInertia = function() {
+ScrollContainer.prototype.updateInertia = function () {
   if (!this.locked && this.inertia && this.content) {
     this.updateViewLimit();
 
