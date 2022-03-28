@@ -377,7 +377,7 @@ export default class ScrollContainer extends DE.GameObject {
 
     this.onscroll = function (event) {
       if (!this.locked && this.pointerInside) {
-        this.scroll(0, this.mouseScrollSpeed * -event.deltaY);
+        this.scroll(this.mouseScrollSpeed * -(event.deltaX || event.deltaY), this.mouseScrollSpeed * -event.deltaY);
       }
     };
     if (!scrollContainerParams.preventWheel)
