@@ -284,7 +284,7 @@ Button.prototype.onMouseClick = function (event) {
     return;
   }
   if (this.sound || Button.prototype.defaultSound) {
-    DE.Audio.fx.play(this.sound || Button.prototype.defaultSound);
+    (DE.Audio.fx || DE.Audio).play(this.sound || Button.prototype.defaultSound);
   }
   this.changeState(event, this.stateOnClick);
   this.customonMouseClick(event);
