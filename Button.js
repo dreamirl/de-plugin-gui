@@ -28,6 +28,7 @@ import DE from '@dreamirl/dreamengine';
  *   }
  * } );
  */
+
 export default class Button extends DE.GameObject {
   constructor(objectParams, buttonParams, events) {
     let hitarea = null;
@@ -246,6 +247,7 @@ export default class Button extends DE.GameObject {
       this.activeAdvancedState('idle');
     }
   }
+
 }
 
 Button.prototype.activeAdvancedState = function (stateName) {
@@ -284,8 +286,9 @@ Button.prototype.onMouseClick = function (event) {
     return;
   }
   if (this.sound || Button.prototype.defaultSound) {
-    (DE.Audio.fx || DE.Audio).play(this.sound || Button.prototype.defaultSound);
-  }
+    if(this.sound != 'none')
+      (DE.Audio.fx || DE.Audio).play(this.sound || Button.prototype.defaultSound);
+  } 
   this.changeState(event, this.stateOnClick);
   this.customonMouseClick(event);
   return true;
