@@ -30,6 +30,8 @@ import DE from '@dreamirl/dreamengine';
  */
 
 export default class Button extends DE.GameObject {
+  static NO_SOUND = 'no_sound_dude';
+
   constructor(objectParams, buttonParams, events) {
     let hitarea = null;
     // todo looks like the collider (at least rectangle) isn't working
@@ -286,7 +288,7 @@ Button.prototype.onMouseClick = function (event) {
     return;
   }
   if (this.sound || Button.prototype.defaultSound) {
-    if(this.sound != 'none')
+    if(this.sound != Button.NO_SOUND)
       (DE.Audio.fx || DE.Audio).play(this.sound || Button.prototype.defaultSound);
   } 
   this.changeState(event, this.stateOnClick);
