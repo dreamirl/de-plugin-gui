@@ -1,6 +1,22 @@
 import PlaceObject from './PlaceObject';
+import * as DE from '@dreamirl/dreamengine';
 
-function nextX(x, width, gridParams) {
+type GridParams = {
+  addOrderX: 'right' | 'left';
+  addOrderY: 'bottom' | 'top';
+  spacingX: number;
+  spacingY: number;
+  maxWidth: number;
+  maxHeight: number;
+  prioOrder: 'horizontal' | 'vertical';
+  marginX: number;
+  marginY: number;
+  offsetX: number;
+  offsetY: number;
+  parent: DE.GameObject;
+};
+
+function nextX(x: number, width: number, gridParams: GridParams) {
   if (gridParams.addOrderX == 'right') {
     x += width + gridParams.spacingX;
   } else {
@@ -10,7 +26,7 @@ function nextX(x, width, gridParams) {
   return x;
 }
 
-function nextY(y, height, gridParams) {
+function nextY(y: number, height: number, gridParams: GridParams) {
   if (gridParams.addOrderY == 'bottom') {
     y += height + gridParams.spacingY;
   } else {
@@ -34,8 +50,11 @@ function setParams(outparams, params, value) {
   }
 }
 
-export default function (objects, params) {
-  var gridParams = Object.assign(
+export default function (
+  objects: DE.GameObject[],
+  params: Partial<GridParams>,
+) {
+  const gridParams: GridParams = Object.assign(
     {
       //grid
       maxWidth: 0,
@@ -58,15 +77,15 @@ export default function (objects, params) {
   setParams(gridParams, params, 'offset');
   setParams(gridParams, params, 'spacing');
 
-  var x = 0;
-  var y = 0;
+  let x = 0;
+  let y = 0;
 
-  var maxObjectWidth = 0;
-  var maxObjectHeight = 0;
+  let maxObjectWidth = 0;
+  let maxObjectHeight = 0;
 
   objects.forEach((object) => {
-    var objectWidth = object.fixedWidth || object.width;
-    var objectHeight = object.fixedHeight || object.height;
+    const objectWidth = object.fixedWidth || object.width;
+    const objectHeight = object.fixedHeight || object.height;
 
     if (gridParams.prioOrder == 'horizontal' && gridParams.maxWidth) {
       if (
