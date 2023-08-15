@@ -8,7 +8,7 @@
     "format": "prettier --config .prettierrc.json --ignore-path .prettierignore --write \"**/*.{js,json,ts,tsx,md,html}\""
   },
   "dependencies": {
-    "@dreamirl/dreamengine": "github:dreamirl/dreamengine#pixi-v6"
+    "@dreamirl/dreamengine": "github:dreamirl/dreamengine#pixi-v6-fixed"
   },
   "devDependencies": {
     "prettier": "^2.2.0",
