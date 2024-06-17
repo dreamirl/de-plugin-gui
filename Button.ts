@@ -379,7 +379,7 @@ Button.prototype.changeState = function (event, type) {
     }
   }
 
-  if (this.textureRenderer) {
+  if (this.textureRenderer && this.textureRendererStates) {
     this.textureRenderer.changeTexture(this.textureRendererStates[dir]);
   }
 };
