@@ -1,4 +1,6 @@
-import DE from '@dreamirl/dreamengine';
+import * as DE from '@dreamirl/dreamengine';
+import GameObject from '@dreamirl/dreamengine/src/classes/GameObject';
+import DE_Audio from '@dreamirl/dreamengine/src/utils/Audio';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -11,7 +13,7 @@ import DE from '@dreamirl/dreamengine';
 /**
  *
  * @example var button = new DE.Button( {
- *   'x': 250, 'y': 250, 'zindex': 10
+ *   'x': 250, 'y': 250, 'zIndex': 10
  * }, {
  *   spriteRenderer: { 'spriteName': 'btn', 'startFrame': 0, 'startLine': 0 }
  *   ,textRenderer: {
@@ -29,10 +31,48 @@ import DE from '@dreamirl/dreamengine';
  * } );
  */
 
-export default class Button extends DE.GameObject {
+type AcceptedRd = DE.AnimatedTextureRenderer
+  | DE.TextureRenderer
+  | DE.SpriteRenderer
+  | DE.TextRenderer;
+
+
+type FnAny = (a: any) => any
+type CustomBtnEvents = { [key: string]: FnAny };
+
+const EmptyFn = function(event: any): any {};
+export default class Button extends GameObject {
   static NO_SOUND = 'no_sound_dude';
 
-  constructor(objectParams, buttonParams, events) {
+  locked = false;
+  direction = 'horizontal';
+  textRenderer?: DE.TextRenderer;
+  isAdvancedButton = false;
+  advancedStates: any;
+  statesRenderer: { [key: string]: AcceptedRd } = {};
+
+  spriteRenderer?: DE.SpriteRenderer;
+  textureRenderer?: DE.TextureRenderer;
+  textureRendererStates: { [key: string]: string } = {};
+  animatedTextureRenderer?: DE.AnimatedTextureRenderer;
+  animatedTextureRendererStates: {
+    [key: string]: DE.AnimatedTextureRenderer;
+  } = {};
+  iconRenderer?: DE.SpriteRenderer | DE.TextureRenderer;
+  disableAlpha = false;
+
+  private customonMouseClick: FnAny = EmptyFn;
+  private customonMouseEnter: FnAny = EmptyFn;
+  private customonMouseLeave: FnAny = EmptyFn;
+  private customonMouseDown: FnAny = EmptyFn;
+  private customonMouseUp: FnAny = EmptyFn;
+  private customonMouseUpOutside: FnAny = EmptyFn;
+
+  stateOnClick: string = '';
+  stateOnUp: string = '';
+  sound: string = '';
+
+  constructor(objectParams: any, buttonParams: any, events: CustomBtnEvents) {
     let hitarea = null;
     // todo looks like the collider (at least rectangle) isn't working
     if (!buttonParams.collider) {
@@ -52,31 +92,33 @@ export default class Button extends DE.GameObject {
       );
     }
 
-    var renderers = [];
-    var spriteRd;
-    var textureRd;
-    var animRd;
-    var textRd;
-    var advStates = {};
+    var renderers: AcceptedRd[] = [];
+    var spriteRd: DE.SpriteRenderer | undefined = undefined;
+    var textureRd: DE.TextureRenderer | undefined = undefined;
+    var animRd: DE.AnimatedTextureRenderer | undefined = undefined;
+    var textRd: DE.TextRenderer | undefined = undefined;
+    var advStates: { [key: string]: AcceptedRd } = {};
 
     if (buttonParams.background) {
       const bgParams = Object.assign(
         buttonParams.background,
         buttonParams.genericRenderersParams || {},
       );
-      var bgRd;
+      let bgRd;
       if (buttonParams.background.textureName) {
-        bgRd = new DE.TextureRenderer(buttonParams.background);
+        bgRd = new DE.TextureRenderer(bgParams);
       } else if (buttonParams.background.spriteName) {
-        bgRd = new DE.SpriteRenderer(buttonParams.background);
+        bgRd = new DE.SpriteRenderer(bgParams);
       } else if (buttonParams.background.frames) {
         bgRd = new DE.AnimatedTextureRenderer(
           buttonParams.background.frames,
           buttonParams.background,
         );
       }
-      bgRd.zindex = -1;
-      renderers.push(bgRd);
+      if (bgRd) {
+        bgRd.zIndex = -1;
+        renderers.push(bgRd);
+      }
     }
 
     if (buttonParams.advancedStates) {
@@ -94,10 +136,13 @@ export default class Button extends DE.GameObject {
         } else if (st.spriteName) {
           rd = new DE.SpriteRenderer(st);
         }
-        advStates[i] = rd;
-        rd.visible = false;
-        rd.zindex = rd.zindex === undefined ? 1 : rd.zindex;
-        renderers.push(rd);
+
+        if (rd) {
+          advStates[i] = rd;
+          rd.visible = false;
+          rd.zIndex = rd.zIndex === undefined ? 1 : rd.zIndex;
+          renderers.push(rd);
+        }
       }
     } else {
       if (buttonParams.spriteRenderer) {
@@ -107,7 +152,7 @@ export default class Button extends DE.GameObject {
             buttonParams.genericRenderersParams || {},
           ),
         );
-        spriteRd.zindex = 1;
+        spriteRd.zIndex = 1;
         renderers.push(spriteRd);
       }
       if (buttonParams.textureRenderer) {
@@ -136,7 +181,7 @@ export default class Button extends DE.GameObject {
         buttonParams.text,
         buttonParams.textRenderer,
       );
-      textRd.zindex = 2;
+      textRd.zIndex = 2;
       renderers.push(textRd);
     }
 
@@ -165,12 +210,17 @@ export default class Button extends DE.GameObject {
         buttonParams.advancedStates[buttonParams.stateOnClick] &&
         buttonParams.advancedStates[buttonParams.stateOnClick].frames
       ) {
-        this.statesRenderer[buttonParams.stateOnClick].onAnimEnd = () => {
-          this.statesRenderer[buttonParams.stateOnClick].gotoAndPause(0);
+        let rd = this.statesRenderer[
+          buttonParams.stateOnClick
+        ] as DE.AnimatedTextureRenderer;
+        rd.onAnimEnd = () => {
+          rd.gotoAndPause(0);
           this.activeAdvancedState(this.stateOnUp);
         };
       }
-      this.statesRenderer.idle.visible = true;
+      if (this.statesRenderer.idle) {
+        this.statesRenderer.idle.visible = true;
+      }
     } else {
       if (spriteRd) {
         this.spriteRenderer = spriteRd;
@@ -186,62 +236,80 @@ export default class Button extends DE.GameObject {
       }
     }
 
-    this.customonMouseClick = function () {};
-    this.customonMouseEnter = function () {};
-    this.customonMouseLeave = function () {};
-    this.customonMouseDown = function () {};
-    this.customonMouseUp = function () {};
-    this.customonMouseUpOutside = function () {};
-    for (var i in events) this['custom' + i] = events[i];
+    this.customonMouseClick = events['onMouseClick'] ?? EmptyFn;
+    this.customonMouseEnter = events['onMouseEnter'] ?? EmptyFn;
+    this.customonMouseLeave = events['onMouseLeave'] ?? EmptyFn;
+    this.customonMouseDown = events['onMouseDown'] ?? EmptyFn;
+    this.customonMouseUp = events['onMouseUp'] ?? EmptyFn;
+    this.customonMouseUpOutside = events['onMouseUpOutside'] ?? EmptyFn;
+
     this.stateOnClick = buttonParams.stateOnClick || 'hover';
     this.stateOnUp = buttonParams.stateOnUp || 'hover';
 
     this.sound = buttonParams.sound;
 
+    /* @ts-ignore property override from pixi Container */
     this.pointertap = this.onMouseClick;
+    /* @ts-ignore property override from pixi Container */
     this.pointerover = this.onMouseEnter;
+    /* @ts-ignore property override from pixi Container */
     this.pointerout = this.onMouseLeave;
+    /* @ts-ignore property override from pixi Container */
     this.pointerdown = this.onMouseDown;
+    /* @ts-ignore property override from pixi Container */
     this.pointerup = this.onMouseUp;
+    /* @ts-ignore property override from pixi Container */
     this.pointerupoutside = this.onMouseUpOutside;
 
     if (buttonParams.icon) {
-      var icon;
+      let icon;
       if (buttonParams.icon.spriteName) {
         icon = new DE.SpriteRenderer(buttonParams.icon);
       } else if (buttonParams.icon.textureName) {
         icon = new DE.TextureRenderer(buttonParams.icon);
       }
-      icon.zindex = 3;
-      this.addRenderer(icon);
-      this.iconRenderer = icon;
 
-      if (icon.marginRight) {
-        icon.x = (this.width / 2 - (icon.width / 2 + icon.marginRight)) >> 0;
-        if (textRd && textRd.x == 0) {
-          textRd.anchor.x = 1;
-          textRd.x =
-            this.width / 2 -
-            (icon.width + icon.marginRight + (icon.margin || icon.marginRight));
+      if (icon) {
+        icon.zIndex = 3;
+        this.addRenderer(icon);
+        this.iconRenderer = icon;
+        
+        let mg = 0;
+        
+        if ('margin' in icon) {
+          mg = icon.margin as number;
         }
-      } else if (icon.marginLeft) {
-        icon.x = (-this.width / 2 + (icon.width / 2 + icon.marginLeft)) >> 0;
-        if (textRd && textRd.x == 0) {
-          textRd.anchor.x = 0;
-          textRd.x =
-            -this.width / 2 +
-            icon.width +
-            icon.marginLeft +
-            (icon.margin || icon.marginLeft);
+        
+        if ('marginRight' in icon) {
+          let mr = icon.marginRight as number;
+          icon.x = (this.width / 2 - (icon.width / 2 + mr)) >> 0;
+          if (textRd && textRd.x == 0) {
+            textRd.anchor.x = 1;
+            textRd.x =
+              this.width / 2 -
+              (icon.width + mr + (mg || mr));
+          }
+        } else if ('marginLeft' in icon) {
+          let ml = icon.marginLeft as number;
+          icon.x = (-this.width / 2 + (icon.width / 2 + ml)) >> 0;
+          if (textRd && textRd.x == 0) {
+            textRd.anchor.x = 0;
+            textRd.x =
+              -this.width / 2 +
+              icon.width +
+              ml +
+              (mg || ml);
+          }
+        } else if (mg !== 0) {
+          let textWidth = 0;
+          if (textRd) {
+            textWidth = DE.PIXI.TextMetrics.measureText(
+              textRd.text,
+              textRd.style as DE.PIXI.TextStyle,
+            ).width;
+          }
+          icon.x = (textWidth / 2 + (mg || icon.width / 2)) >> 0;
         }
-      } else if (icon.margin !== false) {
-        if (textRd) {
-          let textWidth = DE.PIXI.TextMetrics.measureText(
-            textRd.text,
-            textRd.style,
-          ).width;
-        }
-        icon.x = (textWidth / 2 + (icon.margin || icon.width / 2)) >> 0;
       }
     }
 
@@ -250,136 +318,137 @@ export default class Button extends DE.GameObject {
     }
   }
 
-}
+  activeAdvancedState(stateName: string) {
+    if (!this.statesRenderer[stateName]) {
+      return console.error(
+        'The state ' + stateName + ' does not exists on the button',
+        this.id || this,
+      );
+    }
 
-Button.prototype.activeAdvancedState = function (stateName) {
-  if (!this.statesRenderer[stateName]) {
-    return console.error(
-      'The state ' + stateName + ' does not exists on the button',
-      this.id || this,
-    );
+    for (let i in this.statesRenderer) {
+      this.statesRenderer[i]!.visible = false;
+    }
+    if ('pause' in this.statesRenderer[stateName]) {
+      this.statesRenderer[stateName].pause = false;
+    }
+
+    this.statesRenderer[stateName].visible = true;
+
+    this.onStateChanged(stateName, this.statesRenderer[stateName]);
+  }
+  onStateChanged(newState: string, rendererConcerned: AcceptedRd) {}
+
+  lock(value: boolean) {
+    this.locked = value === false ? false : true;
+    this.cursor = this.locked ? 'null' : 'pointer';
+    this.changeState(null, 'idle');
+
+    if (this.isAdvancedButton && this.locked) {
+      this.activeAdvancedState('locked');
+    }
+    this.onLock(value);
+  }
+  onLock(newState: boolean) {}
+
+  static defaultSound: string = ''; // define this for a default sounds applied on all buttons
+  onMouseClick(event: any) {
+    if (this.locked) {
+      return;
+    }
+    if (this.sound != Button.NO_SOUND && (this.sound || Button.defaultSound)) {
+      DE_Audio.play(this.sound || Button.defaultSound);
+    }
+    this.changeState(event, this.stateOnClick);
+    this.customonMouseClick(event);
+    return true;
+  }
+  // let user choose if he want to use it
+  onMouseUp(event: any) {
+    if (this.locked) {
+      return;
+    }
+    this.changeState(event, this.stateOnUp);
+    this.customonMouseUp(event);
+    return true;
   }
 
-  for (var i in this.statesRenderer) {
-    this.statesRenderer[i].visible = false;
+  onMouseUpOutside(event: any) {
+    if (this.locked) {
+      return;
+    }
+    this.changeState(event, 'idle');
+    this.customonMouseUpOutside(event);
+    return true;
   }
-  this.statesRenderer[stateName].pause = false;
-  this.statesRenderer[stateName].visible = true;
 
-  this.onStateChanged(stateName, this.statesRenderer[stateName]);
-};
-Button.prototype.onStateChanged = function () {};
+  onMouseDown(event: any) {
+    if (this.locked) {
+      return;
+    }
+    this.changeState(event, 'active');
+    var e = this.customonMouseDown(event);
+    if (e) return e;
+    // killing events
+    return true;
+  }
 
-Button.prototype.lock = function (value) {
-  this.locked = value === false ? false : true;
-  this.cursor = this.locked ? 'null' : 'pointer';
-  this.changeState(null, 'idle');
+  onMouseEnter(event: any) {
+    if (this.locked) {
+      return;
+    }
+    this.changeState(event, 'hover');
+    var e = this.customonMouseEnter(event);
+    if (e) return e;
+  }
 
-  if (this.isAdvancedButton && this.locked) {
-    this.activeAdvancedState('locked');
+  onMouseLeave(event: any) {
+    if (this.locked) {
+      return;
+    }
+    this.changeState(event, 'idle');
+    var e = this.customonMouseLeave(event);
+    if (e) return e;
   }
-  this.onLock(value);
-};
-Button.prototype.onLock = function () {};
 
-Button.prototype.defaultSound = undefined; // define this for a default sounds applied on all buttons
-Button.prototype.onMouseClick = function (event) {
-  if (this.locked) {
-    return;
-  }
-  if (this.sound || Button.prototype.defaultSound) {
-    if(this.sound != Button.NO_SOUND)
-      (DE.Audio.fx || DE.Audio).play(this.sound || Button.prototype.defaultSound);
-  } 
-  this.changeState(event, this.stateOnClick);
-  this.customonMouseClick(event);
-  return true;
-};
-// let user choose if he want to use it
-Button.prototype.onMouseUp = function (event) {
-  if (this.locked) {
-    return;
-  }
-  this.changeState(event, this.stateOnUp);
-  this.customonMouseUp(event);
-  return true;
-};
-
-Button.prototype.onMouseUpOutside = function (event) {
-  if (this.locked) {
-    return;
-  }
-  this.changeState(event, 'idle');
-  this.customonMouseUpOutside(event);
-  return true;
-};
-
-Button.prototype.onMouseDown = function (event) {
-  if (this.locked) {
-    return;
-  }
-  this.changeState(event, 'active');
-  var e = this.customonMouseDown(event);
-  if (e) return e;
-  // killing events
-  return true;
-};
-
-Button.prototype.onMouseEnter = function (event) {
-  if (this.locked) {
-    return;
-  }
-  this.changeState(event, 'hover');
-  var e = this.customonMouseEnter(event);
-  if (e) return e;
-};
-
-Button.prototype.onMouseLeave = function (event) {
-  if (this.locked) {
-    return;
-  }
-  this.changeState(event, 'idle');
-  var e = this.customonMouseLeave(event);
-  if (e) return e;
-};
-
-Button.prototype.changeState = function (event, type) {
-  if (this.isAdvancedButton) {
-    this.activeAdvancedState(type);
-    return;
-  }
-  var dir = 0;
-  switch (type) {
-    case 'hover':
-      dir = 1;
-      break;
-    case 'active':
-      dir = 2;
-      break;
-    default:
-      dir = 0;
-  }
-  if (this.spriteRenderer) {
-    if (this.direction == 'horizontal') {
-      if (this.spriteRenderer.totalFrame === 1) {
-        if (!this.disableAlpha) {
-          this.spriteRenderer.alpha = 0.8 + 0.1 * dir;
+  changeState(event: any, type: string) {
+    if (this.isAdvancedButton) {
+      this.activeAdvancedState(type);
+      return;
+    }
+    var dir = 0;
+    switch (type) {
+      case 'hover':
+        dir = 1;
+        break;
+      case 'active':
+        dir = 2;
+        break;
+      default:
+        dir = 0;
+    }
+    if (this.spriteRenderer) {
+      if (this.direction == 'horizontal') {
+        if (this.spriteRenderer.totalFrame === 1) {
+          if (!this.disableAlpha) {
+            this.spriteRenderer.alpha = 0.8 + 0.1 * dir;
+          }
+        } else {
+          this.spriteRenderer.setFrame(this.spriteRenderer.startFrame + dir);
         }
       } else {
-        this.spriteRenderer.setFrame(this.spriteRenderer.startFrame + dir);
-      }
-    } else {
-      if (this.spriteRenderer.totalLine === 1) {
-        if (!this.disableAlpha) {
-          this.spriteRenderer.alpha = 0.8 + 0.1 * dir;
+        if (this.spriteRenderer.totalLine === 1) {
+          if (!this.disableAlpha) {
+            this.spriteRenderer.alpha = 0.8 + 0.1 * dir;
+          }
+        } else {
+          this.spriteRenderer.setLine(this.spriteRenderer.startLine + dir);
         }
-      } else {
-        this.spriteRenderer.setLine(this.spriteRenderer.startLine + dir);
       }
     }
-  }
 
-  if (this.textureRenderer && this.textureRendererStates) {
-    this.textureRenderer.changeTexture(this.textureRendererStates[dir]);
+    if (this.textureRenderer && this.textureRendererStates[dir]) {
+      this.textureRenderer.changeTexture(this.textureRendererStates[dir]!);
+    }
   }
-};
+}
