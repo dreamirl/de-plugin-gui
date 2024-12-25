@@ -227,12 +227,12 @@ export default class Button extends GameObject {
       }
       if (textureRd) {
         this.textureRenderer = textureRd;
-        this.textureRendererStates = buttonParams.textureRenderer.states;
+        this.textureRendererStates = buttonParams.textureRenderer.states ?? {};
       }
       if (animRd) {
         this.animatedTextureRenderer = animRd;
         this.animatedTextureRendererStates =
-          buttonParams.animatedTextureRenderer.states;
+          buttonParams.animatedTextureRenderer.states ?? {};
       }
     }
 
