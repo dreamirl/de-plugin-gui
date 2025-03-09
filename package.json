@@ -8,13 +8,12 @@
     "format": "prettier --config .prettierrc.json --ignore-path .prettierignore --write \"**/*.{js,json,ts,tsx,md,html}\""
   },
   "dependencies": {
-    "@dreamirl/dreamengine": "github:dreamirl/dreamengine#pixi-v6-fixed"
   },
   "devDependencies": {
     "prettier": "^2.2.0",
     "pretty-quick": "^3.1.1",
     "typescript": "^5.0.4",
-    "@dreamirl/dreamengine": "github:dreamirl/dreamengine#enforce-types"
+    "@dreamirl/dreamengine": "github:dreamirl/dreamengine"
   },
   "keywords": [],
   "author": "",
